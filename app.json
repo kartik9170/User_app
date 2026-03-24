@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "beauty-app",
+    "name": "BeautyApp",
     "slug": "beauty-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,6 +15,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.beautyapp.mobile",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -24,6 +25,14 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-asset"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "35ccfaae-46cb-42dd-ae29-2072ec27b9e0"
+      }
     }
   }
 }
