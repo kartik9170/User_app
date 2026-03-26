@@ -1,1 +1,1 @@
-export const BASE_URL = 'https://api.example.com';
+export const API_URL = (process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/$/, '');

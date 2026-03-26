@@ -3,27 +3,63 @@ import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Loader from '../../components/Loader';
-import { fetchServices } from '../../services/serviceService';
+import { fetchChapters, fetchServices } from '../../services/serviceService';
 import { fontScale } from '../../utils/responsive';
 
 export default function HomeScreen({ navigation }) {
   const [services, setServices] = useState([]);
+  const [chapters, setChapters] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [query, setQuery] = useState('');
 
   useEffect(() => {
-    const load = async () => { try { setServices(await fetchServices()); } finally { setLoading(false); } };
+    const load = async () => {
+      setLoadError('');
+      try {
+        const [svc, ch] = await Promise.all([fetchServices(), fetchChapters()]);
+        setServices(svc);
+        setChapters(ch);
+      } catch {
+        setLoadError('Could not load services. Check API and try again.');
+        setServices([]);
+        setChapters([]);
+      } finally {
+        setLoading(false);
+      }
+    };
     load();
   }, []);
 
   const filtered = useMemo(() => {
     const term = query.trim().toLowerCase();
     if (!term) return services;
-    return services.filter((item) => item.name.toLowerCase().includes(term) || item.category.toLowerCase().includes(term));
+    return services.filter(
+      (item) =>
+        item.name.toLowerCase().includes(term) ||
+        (item.category && item.category.toLowerCase().includes(term))
+    );
   }, [query, services]);
 
-  const featured = filtered.slice(0, 3);
-  const quickRituals = filtered.slice(3);
+  const seasonalHighlights = useMemo(
+    () => filtered.filter((s) => s.showInSeasonalHighlights),
+    [filtered]
+  );
+  const quickRituals = useMemo(
+    () => filtered.filter((s) => s.showInQuickRituals),
+    [filtered]
+  );
+
+  const gridChapters = chapters.length
+    ? chapters.slice(0, 12)
+    : [
+        { slug: 'facial', title: 'Facial', iconKey: 'face-5' },
+        { slug: 'hair', title: 'Hair', iconKey: 'content-cut' },
+        { slug: 'waxing', title: 'Waxing', iconKey: 'dry-cleaning' },
+        { slug: 'spa', title: 'Spa', iconKey: 'hot-tub' },
+        { slug: 'packages', title: 'Packages', iconKey: 'redeem' },
+        { slug: 'bridal', title: 'Bridal', iconKey: 'auto-awesome' },
+      ];
 
   if (loading) return <Loader />;
 
@@ -55,6 +91,12 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.heroSub}>Salon and home beauty services for modern lifestyle.</Text>
         </View>
 
+        {loadError ? (
+          <View style={styles.warnBox}>
+            <Text style={styles.warnText}>{loadError}</Text>
+          </View>
+        ) : null}
+
         <View style={styles.searchWrap}>
           <MaterialIcons name="search" size={20} color="#7a8681" />
           <TextInput
@@ -74,23 +116,21 @@ export default function HomeScreen({ navigation }) {
         </View>
 
         <View style={styles.categoriesGrid}>
-          {[
-            ['face-5', 'Facial'],
-            ['content-cut', 'Hair'],
-            ['dry-cleaning', 'Waxing'],
-            ['hot-tub', 'Spa'],
-            ['redeem', 'Packages'],
-            ['auto-awesome', 'Bridal'],
-          ].map(([icon, label]) => (
+          {gridChapters.map((ch) => (
             <Pressable
-              key={label}
+              key={ch.slug || ch.title}
               style={styles.categoryCard}
-              onPress={() => navigation.navigate('CategoryServices', { category: label })}
+              onPress={() =>
+                navigation.navigate('CategoryServices', {
+                  chapterSlug: ch.slug,
+                  category: ch.title,
+                })
+              }
             >
               <View style={styles.categoryIconWrap}>
-                <MaterialIcons name={icon} size={26} color="#366855" />
+                <MaterialIcons name={ch.iconKey || 'spa'} size={26} color="#366855" />
               </View>
-              <Text style={styles.categoryText}>{label}</Text>
+              <Text style={styles.categoryText}>{ch.title}</Text>
             </Pressable>
           ))}
         </View>
@@ -110,49 +150,59 @@ export default function HomeScreen({ navigation }) {
           </View>
         </View>
 
-        <View style={styles.sectionHead}>
-          <Text style={styles.sectionTitle}>Seasonal Highlights</Text>
-        </View>
-
-        {featured.map((item) => (
-          <Pressable
-            key={item.id}
-            onPress={() => navigation.navigate('ServiceDetails', { serviceId: item.id })}
-            style={styles.featureCard}
-          >
-            <Image source={{ uri: item.image }} style={styles.featureImage} />
-            <View style={styles.featureBody}>
-              <View style={styles.featureTop}>
-                <Text style={styles.featureName}>{item.name}</Text>
-                <Text style={styles.featurePrice}>INR {item.price}</Text>
-              </View>
-              <Text style={styles.featureDesc} numberOfLines={2}>{item.description}</Text>
-              <Text style={styles.featureMeta}>{item.duration} • {item.category}</Text>
+        {seasonalHighlights.length > 0 ? (
+          <>
+            <View style={styles.sectionHead}>
+              <Text style={styles.sectionTitle}>Seasonal Highlights</Text>
             </View>
-          </Pressable>
-        ))}
+            {seasonalHighlights.map((item) => (
+              <Pressable
+                key={item.id}
+                onPress={() => navigation.navigate('ServiceDetails', { serviceId: item.id })}
+                style={styles.featureCard}
+              >
+                <Image source={{ uri: item.image }} style={styles.featureImage} />
+                <View style={styles.featureBody}>
+                  <View style={styles.featureTop}>
+                    <Text style={styles.featureName}>{item.name}</Text>
+                    <Text style={styles.featurePrice}>INR {item.price}</Text>
+                  </View>
+                  <Text style={styles.featureDesc} numberOfLines={2}>
+                    {item.description}
+                  </Text>
+                  <Text style={styles.featureMeta}>
+                    {item.duration} • {item.category}
+                  </Text>
+                </View>
+              </Pressable>
+            ))}
+          </>
+        ) : null}
 
-        <View style={styles.sectionHead}>
-          <Text style={styles.sectionTitle}>Quick Rituals</Text>
-        </View>
-
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.quickRow}>
-          {quickRituals.map((item) => (
-            <Pressable
-              key={item.id}
-              onPress={() => navigation.navigate('ServiceDetails', { serviceId: item.id })}
-              style={styles.quickCard}
-            >
-              <Image source={{ uri: item.image }} style={styles.quickImage} />
-              <Text style={styles.quickName}>{item.name}</Text>
-              <Text style={styles.quickSub}>{item.duration}</Text>
-              <View style={styles.quickFooter}>
-                <Text style={styles.quickPrice}>INR {item.price}</Text>
-                <MaterialIcons name="add-circle" size={20} color="#366855" />
-              </View>
-            </Pressable>
-          ))}
-        </ScrollView>
+        {quickRituals.length > 0 ? (
+          <>
+            <View style={styles.sectionHead}>
+              <Text style={styles.sectionTitle}>Quick Rituals</Text>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.quickRow}>
+              {quickRituals.map((item) => (
+                <Pressable
+                  key={item.id}
+                  onPress={() => navigation.navigate('ServiceDetails', { serviceId: item.id })}
+                  style={styles.quickCard}
+                >
+                  <Image source={{ uri: item.image }} style={styles.quickImage} />
+                  <Text style={styles.quickName}>{item.name}</Text>
+                  <Text style={styles.quickSub}>{item.duration}</Text>
+                  <View style={styles.quickFooter}>
+                    <Text style={styles.quickPrice}>INR {item.price}</Text>
+                    <MaterialIcons name="add-circle" size={20} color="#366855" />
+                  </View>
+                </Pressable>
+              ))}
+            </ScrollView>
+          </>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -180,6 +230,13 @@ const styles = StyleSheet.create({
   heroBlock: { marginBottom: 10 },
   heroTitle: { color: '#313c3b', fontSize: fontScale(30), fontWeight: '900', lineHeight: fontScale(35), marginBottom: 3 },
   heroSub: { color: '#5f6b66', fontSize: fontScale(14) },
+  warnBox: {
+    backgroundColor: '#fdecea',
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 10,
+  },
+  warnText: { color: '#8a2f2f', fontSize: fontScale(12) },
   searchWrap: {
     borderRadius: 14,
     backgroundColor: '#deebe8',
@@ -204,13 +261,31 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: 'center',
   },
-  categoryIconWrap: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#eaf6f4', alignItems: 'center', justifyContent: 'center', marginBottom: 6 },
+  categoryIconWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#eaf6f4',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 6,
+  },
   categoryText: { color: '#313c3b', fontSize: fontScale(12), fontWeight: '700' },
   banner: { borderRadius: 24, overflow: 'hidden', minHeight: 190, marginBottom: 12 },
   bannerImage: { ...StyleSheet.absoluteFillObject, width: undefined, height: undefined },
   bannerOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(19,30,28,0.38)' },
   bannerContent: { padding: 16, marginTop: 'auto' },
-  bannerPill: { alignSelf: 'flex-start', backgroundColor: 'rgba(166,242,212,0.85)', color: '#004332', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 4, fontSize: fontScale(9), fontWeight: '800', textTransform: 'uppercase' },
+  bannerPill: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(166,242,212,0.85)',
+    color: '#004332',
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    fontSize: fontScale(9),
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
   bannerTitle: { marginTop: 8, color: '#FFFFFF', fontSize: fontScale(24), fontWeight: '800' },
   bannerSub: { color: 'rgba(255,255,255,0.85)', fontSize: fontScale(12), marginTop: 2 },
   featureCard: {

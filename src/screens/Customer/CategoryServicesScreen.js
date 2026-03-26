@@ -1,28 +1,64 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Loader from '../../components/Loader';
+import { fetchServicesByChapterSlug } from '../../services/serviceService';
 import servicesData from '../../data/servicesData';
 import { fontScale } from '../../utils/responsive';
 
 export default function CategoryServicesScreen({ route, navigation }) {
-  const category = route?.params?.category || 'Facial';
+  const chapterSlug = route?.params?.chapterSlug;
+  const category = route?.params?.category || 'Services';
   const [query, setQuery] = useState('');
+  const [list, setList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [usedApi, setUsedApi] = useState(false);
 
-  const list = useMemo(
-    () => servicesData.filter((item) => item.category.toLowerCase() === category.toLowerCase()),
-    [category]
-  );
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      if (chapterSlug) {
+        try {
+          const rows = await fetchServicesByChapterSlug(chapterSlug);
+          if (!cancelled) {
+            setList(rows);
+            setUsedApi(true);
+          }
+        } catch {
+          if (!cancelled) {
+            setList(
+              servicesData.filter((item) => item.category.toLowerCase() === String(category).toLowerCase())
+            );
+            setUsedApi(false);
+          }
+        }
+      } else {
+        setList(
+          servicesData.filter((item) => item.category.toLowerCase() === String(category).toLowerCase())
+        );
+        setUsedApi(false);
+      }
+      if (!cancelled) setLoading(false);
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [chapterSlug, category]);
+
   const filtered = useMemo(() => {
     const term = query.trim().toLowerCase();
     if (!term) return list;
     return list.filter(
       (item) =>
         item.name.toLowerCase().includes(term) ||
-        item.description.toLowerCase().includes(term) ||
-        item.type.toLowerCase().includes(term)
+        (item.description && item.description.toLowerCase().includes(term)) ||
+        (item.type && item.type.toLowerCase().includes(term))
     );
   }, [list, query]);
+
+  if (loading) return <Loader />;
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -39,7 +75,9 @@ export default function CategoryServicesScreen({ route, navigation }) {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.headSection}>
           <Text style={styles.heroTitle}>Find Your Perfect {category} Service</Text>
-          <Text style={styles.heroSub}>Compact list for quick browsing and faster booking.</Text>
+          <Text style={styles.heroSub}>
+            {usedApi ? 'Live catalog from your salon.' : 'Browse and book when ready.'}
+          </Text>
         </View>
 
         <View style={styles.searchWrap}>
@@ -47,7 +85,7 @@ export default function CategoryServicesScreen({ route, navigation }) {
           <TextInput
             value={query}
             onChangeText={setQuery}
-            placeholder={`Search ${category.toLowerCase()} services...`}
+            placeholder={`Search ${String(category).toLowerCase()} services...`}
             placeholderTextColor="#8a9692"
             style={styles.searchInput}
           />
@@ -57,15 +95,23 @@ export default function CategoryServicesScreen({ route, navigation }) {
         </View>
 
         {filtered.map((item) => (
-          <Pressable key={item.id} onPress={() => navigation.navigate('ServiceDetails', { serviceId: item.id })} style={styles.card}>
+          <Pressable
+            key={item.id}
+            onPress={() => navigation.navigate('ServiceDetails', { serviceId: item.id })}
+            style={styles.card}
+          >
             <Image source={{ uri: item.image }} style={styles.image} />
             <View style={styles.body}>
               <View style={styles.row}>
                 <Text style={styles.name}>{item.name}</Text>
                 <Text style={styles.price}>INR {item.price}</Text>
               </View>
-              <Text numberOfLines={2} style={styles.desc}>{item.description}</Text>
-              <Text style={styles.meta}>{item.duration} • {item.type}</Text>
+              <Text numberOfLines={2} style={styles.desc}>
+                {item.description}
+              </Text>
+              <Text style={styles.meta}>
+                {item.duration} • {item.type}
+              </Text>
             </View>
           </Pressable>
         ))}
@@ -73,7 +119,7 @@ export default function CategoryServicesScreen({ route, navigation }) {
         {!filtered.length ? (
           <View style={styles.emptyWrap}>
             <Text style={styles.emptyTitle}>No services found</Text>
-            <Text style={styles.emptySub}>Try another keyword.</Text>
+            <Text style={styles.emptySub}>Add services in the admin panel.</Text>
           </View>
         ) : null}
       </ScrollView>

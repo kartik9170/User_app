@@ -68,9 +68,13 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.safeArea} edges={['bottom']}>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.select({ ios: 'padding', android: undefined })}>
-        <ScrollView contentContainerStyle={[styles.scrollContainer, { paddingBottom: insets.bottom + 16 }]} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentInsetAdjustmentBehavior="never"
+          contentContainerStyle={[styles.scrollContainer, { paddingBottom: insets.bottom + 16, paddingTop: 0 }]}
+          keyboardShouldPersistTaps="handled"
+        >
           <View style={[styles.heroWrap, { height: heroHeight }]}>
             <ImageBackground
               source={{
