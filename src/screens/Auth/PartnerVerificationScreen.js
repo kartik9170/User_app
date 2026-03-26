@@ -1,9 +1,10 @@
 import React from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { fontScale } from '../../utils/responsive';
 import PartnerBottomNav from '../../components/PartnerBottomNav';
+import useAuth from '../../hooks/useAuth';
 
 const TIMELINE = [
   {
@@ -33,6 +34,10 @@ const TIMELINE = [
 ];
 
 export default function PartnerVerificationScreen({ navigation }) {
+  const { partnerApplication, updatePartnerStatus } = useAuth();
+  const status = partnerApplication?.status || 'pending';
+  const statusLabel = status === 'approved' ? 'Approved' : status === 'rejected' ? 'Rejected' : 'Verification Pending';
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <View style={styles.topBar}>
@@ -52,10 +57,10 @@ export default function PartnerVerificationScreen({ navigation }) {
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.hero}>
-          <Text style={styles.statusPill}>Status: Processing</Text>
+          <Text style={styles.statusPill}>Status: {statusLabel}</Text>
           <Text style={styles.heroTitle}>Verifying your artistry</Text>
           <Text style={styles.heroSub}>
-            We are currently reviewing your credentials to ensure the Emerald Pro standard remains elite.
+            Documents and profile details are under admin review. Partner panel will open only after approved and activated.
           </Text>
         </View>
 
@@ -63,7 +68,7 @@ export default function PartnerVerificationScreen({ navigation }) {
           <View style={styles.mainHeader}>
             <View>
               <Text style={styles.phaseLabel}>CURRENT PHASE</Text>
-              <Text style={styles.phaseTitle}>Document Review</Text>
+              <Text style={styles.phaseTitle}>{status === 'approved' ? 'Panel Activation' : 'Document Review'}</Text>
             </View>
             <View style={styles.phaseIconWrap}>
               <MaterialIcons name="pending-actions" size={24} color="#366855" />
@@ -131,25 +136,26 @@ export default function PartnerVerificationScreen({ navigation }) {
         </View>
 
         <View style={styles.footerCard}>
-          <Text style={styles.footerTitle}>Need to add more?</Text>
-          <Text style={styles.footerSub}>You can update your professional bio while we review.</Text>
+          <Text style={styles.footerTitle}>Admin Verification Pending</Text>
+          <Text style={styles.footerSub}>Aapka dashboard tab active hoga jab status approved ho jayega.</Text>
           <Pressable onPress={() => navigation.navigate('PartnerProfessionalProfilePreview')} style={styles.editButton}>
             <Text style={styles.editButtonText}>Edit Professional Profile</Text>
           </Pressable>
+          {status !== 'approved' ? (
+            <Pressable onPress={() => updatePartnerStatus('approved')} style={styles.devApproveButton}>
+              <Text style={styles.devApproveText}>Simulate Admin Approve</Text>
+            </Pressable>
+          ) : null}
         </View>
 
-        <Pressable>
+        <Pressable onPress={() => navigation.navigate('PartnerSupportDetails')}>
           <Text style={styles.supportText}>Contact Concierge Support</Text>
         </Pressable>
       </ScrollView>
 
       <PartnerBottomNav
         activeKey="profile"
-        onPressItem={(key) => {
-          if (key === 'home') navigation.navigate('PartnerHomePreview');
-          if (key === 'book') navigation.navigate('PartnerBookPreview');
-          if (key === 'pay') navigation.navigate('PartnerEarningsPreview');
-        }}
+        onPressItem={() => Alert.alert('Verification Pending', 'Panel admin approval ke baad open hoga.')}
       />
     </SafeAreaView>
   );
@@ -270,6 +276,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   editButtonText: { color: '#FFFFFF', fontSize: fontScale(15), fontWeight: '700' },
+  devApproveButton: {
+    width: '100%',
+    marginTop: 10,
+    minHeight: 42,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(54,104,85,0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  devApproveText: { color: '#366855', fontSize: fontScale(13), fontWeight: '700' },
   supportText: {
     textAlign: 'center',
     marginTop: 16,

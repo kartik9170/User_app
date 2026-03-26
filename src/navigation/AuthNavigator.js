@@ -5,6 +5,7 @@ import LoginScreen from '../screens/Auth/LoginScreen';
 import SignupScreen from '../screens/Auth/SignupScreen';
 import PartnerProfileSetupScreen from '../screens/Auth/PartnerProfileSetupScreen';
 import PartnerVerificationScreen from '../screens/Auth/PartnerVerificationScreen';
+import PartnerSupportDetailsScreen from '../screens/Auth/PartnerSupportDetailsScreen';
 import DashboardScreen from '../screens/Partner/DashboardScreen';
 import BookOverviewScreen from '../screens/Partner/BookOverviewScreen';
 import BookingRequestDetailScreen from '../screens/Partner/BookingRequestDetailScreen';
@@ -27,6 +28,7 @@ export default function AuthNavigator() {
       <Stack.Screen name="Signup" component={SignupScreen} options={{ title: 'Signup' }} />
       <Stack.Screen name="PartnerProfileSetup" component={PartnerProfileSetupScreen} options={{ headerShown: false }} />
       <Stack.Screen name="PartnerVerification" component={PartnerVerificationScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="PartnerSupportDetails" component={PartnerSupportDetailsScreen} options={{ headerShown: false }} />
       <Stack.Screen name="PartnerHomePreview" component={DashboardScreen} options={{ title: 'Partner Home', headerShown: false }} />
       <Stack.Screen name="PartnerEarningsPreview" component={EarningsScreen} options={{ title: 'Partner Earnings', headerShown: false }} />
       <Stack.Screen name="PartnerWithdrawPreview" component={WithdrawalScreen} options={{ title: 'Partner Withdraw', headerShown: false }} />

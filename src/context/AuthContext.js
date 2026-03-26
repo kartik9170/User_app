@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [role, setRole] = useState(null);
+  const [partnerApplication, setPartnerApplication] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const login = async (payload) => {
@@ -21,10 +22,38 @@ export const AuthProvider = ({ children }) => {
     finally { setLoading(false); }
   };
 
-  const logout = () => { setUser(null); setToken(null); setRole(null); };
+  const logout = () => {
+    setUser(null);
+    setToken(null);
+    setRole(null);
+    setPartnerApplication(null);
+  };
 
   const updateUserProfile = (updates) => {
     setUser((prev) => ({ ...(prev || {}), ...(updates || {}) }));
+  };
+
+  const submitPartnerApplication = (payload) => {
+    const submittedAt = new Date().toISOString();
+    setPartnerApplication({
+      ...(payload || {}),
+      submittedAt,
+      status: 'verification_pending',
+      accessStatus: 'pending',
+    });
+    setRole('partner');
+  };
+
+  const updatePartnerStatus = (status) => {
+    setPartnerApplication((prev) => {
+      const previous = prev || {};
+      const accessStatus = status === 'approved' ? 'active' : previous.accessStatus || 'pending';
+      return {
+        ...previous,
+        status,
+        accessStatus,
+      };
+    });
   };
 
   const value = useMemo(
@@ -32,6 +61,7 @@ export const AuthProvider = ({ children }) => {
       user,
       token,
       role,
+      partnerApplication,
       loading,
       isAuthenticated: Boolean(token),
       login,
@@ -39,8 +69,10 @@ export const AuthProvider = ({ children }) => {
       setRole,
       logout,
       updateUserProfile,
+      submitPartnerApplication,
+      updatePartnerStatus,
     }),
-    [user, token, role, loading]
+    [user, token, role, partnerApplication, loading]
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -7,11 +7,12 @@ import useAuth from '../hooks/useAuth';
 import { ROLES } from '../utils/constants';
 
 export default function AppNavigator() {
-  const { isAuthenticated, role } = useAuth();
+  const { isAuthenticated, role, partnerApplication } = useAuth();
+  const partnerCanAccessDashboard = partnerApplication?.accessStatus === 'active';
 
   let content = <AuthNavigator />;
   if (isAuthenticated && role === ROLES.CUSTOMER) content = <CustomerNavigator />;
-  if (isAuthenticated && (!role || role === ROLES.PARTNER)) content = <PartnerNavigator />;
+  if (isAuthenticated && (!role || (role === ROLES.PARTNER && partnerCanAccessDashboard))) content = <PartnerNavigator />;
 
   return <NavigationContainer>{content}</NavigationContainer>;
 }

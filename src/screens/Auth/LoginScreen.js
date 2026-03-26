@@ -153,7 +153,7 @@ export default function LoginScreen({ navigation }) {
               </View>
 
               <Pressable onPress={() => navigation.navigate('PartnerProfileSetup')}>
-                <Text style={styles.applyText}>Apply for Partnership</Text>
+                <Text style={styles.applyText}>Join as Partner</Text>
               </Pressable>
             </View>
           </View>
