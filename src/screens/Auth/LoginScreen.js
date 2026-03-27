@@ -16,6 +16,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { LinearGradient } from 'expo-linear-gradient';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import useAuth from '../../hooks/useAuth';
+import { resendLoginOtp, sendLoginOtp } from '../../services/authService';
 import { ROLES } from '../../utils/constants';
 import { clamp, fontScale, moderateScale } from '../../utils/responsive';
 
@@ -27,6 +28,9 @@ export default function LoginScreen({ navigation }) {
   const [countryCode] = useState('+91');
   const [mobile, setMobile] = useState('');
   const [otp, setOtp] = useState(['', '', '', '']);
+  const [otpSending, setOtpSending] = useState(false);
+  /** Last mobile we successfully triggered MSG91 for (send or resend). */
+  const [lastOtpMobile, setLastOtpMobile] = useState('');
   const otpRefs = useRef([]);
 
   const titleSize = useMemo(() => (compact ? fontScale(30) : fontScale(34)), [compact]);
@@ -45,11 +49,10 @@ export default function LoginScreen({ navigation }) {
     }
 
     try {
-      await login({ email: `${mobile}@beautyapp.com`, password: otp.join('') });
-      // Client-first entry flow after sign in.
+      await login({ mobile, otp: otp.join('') });
       setRole(ROLES.CUSTOMER);
     } catch (error) {
-      Alert.alert('Sign In Failed', 'Please try again.');
+      Alert.alert('Sign In Failed', error?.message || 'Please try again.');
     }
   };
 
@@ -64,6 +67,27 @@ export default function LoginScreen({ navigation }) {
   const handleOtpKeyPress = (index, key) => {
     if (key === 'Backspace' && !otp[index] && index > 0) {
       otpRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const requestOtp = async () => {
+    if (mobile.trim().length < 10) {
+      return Alert.alert('Invalid Mobile Number', 'Please enter a valid 10 digit mobile number first.');
+    }
+    const isResend = lastOtpMobile === mobile;
+    setOtpSending(true);
+    try {
+      if (isResend) {
+        await resendLoginOtp(mobile);
+      } else {
+        await sendLoginOtp(mobile);
+      }
+      setLastOtpMobile(mobile);
+      Alert.alert('OTP', isResend ? 'A new code has been sent.' : 'Verification code sent to your mobile.');
+    } catch (e) {
+      Alert.alert('OTP', e?.message || 'Could not send OTP. Try again.');
+    } finally {
+      setOtpSending(false);
     }
   };
 
@@ -117,7 +141,15 @@ export default function LoginScreen({ navigation }) {
             <View style={styles.fieldGroup}>
               <View style={styles.labelRow}>
                 <Text style={styles.label}>VERIFICATION CODE</Text>
-                <Text style={styles.resendText}>Resend</Text>
+                <Pressable
+                  disabled={otpSending || loading}
+                  onPress={requestOtp}
+                  hitSlop={8}
+                >
+                  <Text style={[styles.resendText, (otpSending || loading) && styles.resendDisabled]}>
+                    {otpSending ? 'Sending…' : lastOtpMobile === mobile && mobile.length === 10 ? 'Resend' : 'Send OTP'}
+                  </Text>
+                </Pressable>
               </View>
               <View style={styles.otpRow}>
                 {otp.map((digit, index) => (
@@ -220,6 +252,7 @@ const styles = StyleSheet.create({
   progressFill: { height: '100%', backgroundColor: '#366855', borderRadius: 999 },
   labelRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
   resendText: { color: '#366855', fontWeight: '700', fontSize: fontScale(11), letterSpacing: 1 },
+  resendDisabled: { opacity: 0.45 },
   otpRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 10 },
   otpInput: {
     width: 54,

@@ -1,5 +1,6 @@
 import React, { createContext, useMemo, useState } from 'react';
 import { loginUser, signupUser } from '../services/authService';
+import { submitPartnerApplicationApi } from '../services/partnerApplicationService';
 
 export const AuthContext = createContext();
 
@@ -12,8 +13,13 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (payload) => {
     setLoading(true);
-    try { const res = await loginUser(payload); setUser(res.user); setToken(res.token); }
-    finally { setLoading(false); }
+    try {
+      const res = await loginUser(payload);
+      setUser(res.user);
+      setToken(res.token);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const signup = async (payload) => {
@@ -33,15 +39,30 @@ export const AuthProvider = ({ children }) => {
     setUser((prev) => ({ ...(prev || {}), ...(updates || {}) }));
   };
 
-  const submitPartnerApplication = (payload) => {
+  const submitPartnerApplication = async (payload) => {
     const submittedAt = new Date().toISOString();
-    setPartnerApplication({
+    const merged = {
       ...(payload || {}),
       submittedAt,
       status: 'verification_pending',
       accessStatus: 'pending',
-    });
+    };
+    let syncError = null;
+    try {
+      const data = await submitPartnerApplicationApi(merged);
+      const app = data.application || {};
+      setPartnerApplication({
+        ...merged,
+        ...app,
+        id: app.id,
+        remoteId: app.id,
+      });
+    } catch (e) {
+      syncError = e?.message || 'sync_failed';
+      setPartnerApplication({ ...merged, syncError });
+    }
     setRole('partner');
+    return { syncError };
   };
 
   const updatePartnerStatus = (status) => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { clamp, fontScale } from '../../utils/responsive';
@@ -13,10 +13,10 @@ const ONBOARDING_STEPS = [
   { key: 'basic', title: 'Basic Registration', status: 'pending' },
   { key: 'personal', title: 'Personal Details', status: 'pending' },
   { key: 'documents', title: 'Document Upload', status: 'verification_pending' },
-  { key: 'services', title: 'Services & Pricing', status: 'verification_pending' },
+  { key: 'services', title: 'Services', status: 'verification_pending' },
   { key: 'location', title: 'Location Setup', status: 'verification_pending' },
   { key: 'bank', title: 'Bank Details', status: 'verification_pending' },
-  { key: 'training', title: 'Guidelines', status: 'verification_pending' },
+  { key: 'training', title: 'Terms & Conditions', status: 'verification_pending' },
 ];
 
 const initialForm = {
@@ -64,6 +64,9 @@ function Field({ label, value, onChangeText, placeholder, keyboardType = 'defaul
 
 export default function PartnerProfileSetupScreen({ navigation }) {
   const { submitPartnerApplication } = useAuth();
+  const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const compact = width < 360;
   const [stepIndex, setStepIndex] = useState(0);
   const [form, setForm] = useState(initialForm);
   const otpRefs = useRef([]);
@@ -71,7 +74,7 @@ export default function PartnerProfileSetupScreen({ navigation }) {
 
   const progressText = useMemo(() => `Step ${stepIndex + 1} of ${ONBOARDING_STEPS.length}`, [stepIndex]);
   const currentStep = ONBOARDING_STEPS[stepIndex];
-  const sidePadding = clamp(22, 16, 24);
+  const sidePadding = clamp(width * 0.06, 14, 24);
   const otpFilledCount = (form.otp || '').length;
 
   const updateForm = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
@@ -176,16 +179,7 @@ export default function PartnerProfileSetupScreen({ navigation }) {
     }
   }, [currentStep.key]);
 
-  const toggleSkill = (item) => {
-    setForm((prev) => {
-      const next = prev.skills.includes(item)
-        ? prev.skills.filter((s) => s !== item)
-        : [...prev.skills, item];
-      return { ...prev, skills: next };
-    });
-  };
-
-  const toggleServiceForPricing = (item) => {
+  const toggleService = (item) => {
     setForm((prev) => {
       const exists = prev.skills.includes(item);
       return {
@@ -205,9 +199,7 @@ export default function PartnerProfileSetupScreen({ navigation }) {
       if (!form.fullName.trim()) return 'Full name required hai.';
       if (!form.address.trim()) return 'Address required hai.';
       if (!form.age.trim()) return 'Age required hai.';
-      if (!form.gender.trim()) return 'Gender select karo.';
       if (!form.experience.trim()) return 'Experience years dalo.';
-      if (!form.skills.length) return 'Kam se kam 1 skill select karo.';
     }
 
     if (currentStep.key === 'documents') {
@@ -217,6 +209,7 @@ export default function PartnerProfileSetupScreen({ navigation }) {
     }
 
     if (currentStep.key === 'services') {
+      if (!form.gender.trim()) return 'Gender select karo.';
       if (!form.skills.length) return 'Service select karo.';
     }
 
@@ -234,12 +227,12 @@ export default function PartnerProfileSetupScreen({ navigation }) {
       if (!form.ifsc.trim()) return 'IFSC code required hai.';
     }
 
-    if (currentStep.key === 'training' && !form.agreed) return 'Terms agree karna required hai.';
+    if (currentStep.key === 'training' && !form.agreed) return 'Please accept the Partner Terms & Conditions to continue.';
 
     return '';
   };
 
-  const goNext = () => {
+  const goNext = async () => {
     const error = validateStep();
     if (error) return Alert.alert('Required', error);
     if (stepIndex < ONBOARDING_STEPS.length - 1) {
@@ -247,13 +240,20 @@ export default function PartnerProfileSetupScreen({ navigation }) {
       return;
     }
 
-    submitPartnerApplication({
+    const { syncError } = await submitPartnerApplication({
       ...form,
       flowStatus: 'pending',
       verificationStatus: 'verification_pending',
       reviewStatus: 'pending',
     });
-    Alert.alert('Application Submitted', 'Partner onboarding submit ho gaya. Ab admin verification ke baad panel active hoga.');
+    if (syncError) {
+      Alert.alert(
+        'Saved offline',
+        `Your details are saved on this device, but the server could not be reached (${syncError}). Try again when online.`
+      );
+    } else {
+      Alert.alert('Application Submitted', 'Your application was sent. Admin will review and activate your account.');
+    }
     navigation.navigate('PartnerVerification');
   };
 
@@ -267,25 +267,30 @@ export default function PartnerProfileSetupScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <View style={styles.header}>
-        <Pressable onPress={goBack} style={styles.iconBtn}>
-          <MaterialIcons name="arrow-back" size={22} color="#366855" />
-        </Pressable>
-        <Text style={styles.headerTitle}>Join as Partner</Text>
-        <View style={styles.iconBtn} />
-      </View>
-
-      <ScrollView contentContainerStyle={[styles.content, { paddingHorizontal: sidePadding }]} showsVerticalScrollIndicator={false}>
-        <Text style={styles.stepText}>{progressText}</Text>
-        <Text style={styles.mainTitle}>{currentStep.title}</Text>
-        <Text style={styles.sub}>
-          Partner panel tabhi open hoga jab onboarding complete ho aur admin status `approved` karke `active` kare.
-        </Text>
-
-        <View style={styles.flowCard}>
-          <Text style={styles.flowTitle}>Status Flow</Text>
-          <Text style={styles.flowLine}>pending → verification_pending → approved → active</Text>
+      <KeyboardAvoidingView style={styles.flex} behavior={Platform.select({ ios: 'padding', android: undefined })}>
+        <View style={styles.header}>
+          <Pressable onPress={goBack} style={styles.iconBtn}>
+            <MaterialIcons name="arrow-back" size={22} color="#366855" />
+          </Pressable>
+          <Text style={styles.headerTitle}>Join as Partner</Text>
+          <View style={styles.iconBtn} />
         </View>
+
+        <ScrollView
+          contentContainerStyle={[styles.content, { paddingHorizontal: sidePadding, paddingBottom: insets.bottom + 20 }]}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Text style={styles.stepText}>{progressText}</Text>
+          <Text style={[styles.mainTitle, compact && styles.mainTitleCompact]}>{currentStep.title}</Text>
+          <Text style={styles.sub}>
+            Partner dashboard opens after onboarding is complete and an admin sets your status to active (approved → active).
+          </Text>
+
+          <View style={styles.flowCard}>
+            <Text style={styles.flowTitle}>Status Flow</Text>
+            <Text style={styles.flowLine}>pending → verification_pending → approved → active</Text>
+          </View>
 
         {currentStep.key === 'basic' ? (
           <View style={styles.authCard}>
@@ -345,27 +350,6 @@ export default function PartnerProfileSetupScreen({ navigation }) {
             <Field label="Address" value={form.address} onChangeText={(v) => updateForm('address', v)} placeholder="Complete address" />
             <Field label="Age" value={form.age} onChangeText={(v) => updateForm('age', v.replace(/[^0-9]/g, '').slice(0, 2))} placeholder="Age" keyboardType="number-pad" />
             <Field label="Experience (Years)" value={form.experience} onChangeText={(v) => updateForm('experience', v.replace(/[^0-9]/g, '').slice(0, 2))} placeholder="e.g. 5" keyboardType="number-pad" />
-
-            <Text style={styles.label}>Gender</Text>
-            <View style={styles.row}>
-              {GENDER_OPTIONS.map((item) => (
-                <Pressable key={item} onPress={() => updateForm('gender', item)} style={[styles.chip, form.gender === item && styles.chipActive]}>
-                  <Text style={[styles.chipText, form.gender === item && styles.chipTextActive]}>{item}</Text>
-                </Pressable>
-              ))}
-            </View>
-
-            <Text style={styles.label}>Skills (Multi Select)</Text>
-            <View style={styles.row}>
-              {SERVICE_OPTIONS.map((item) => {
-                const selected = form.skills.includes(item);
-                return (
-                  <Pressable key={item} onPress={() => toggleSkill(item)} style={[styles.chip, selected && styles.chipActive]}>
-                    <Text style={[styles.chipText, selected && styles.chipTextActive]}>{item}</Text>
-                  </Pressable>
-                );
-              })}
-            </View>
           </View>
         ) : null}
 
@@ -401,12 +385,21 @@ export default function PartnerProfileSetupScreen({ navigation }) {
 
         {currentStep.key === 'services' ? (
           <View>
+            <Text style={styles.label}>Gender</Text>
+            <View style={styles.row}>
+              {GENDER_OPTIONS.map((item) => (
+                <Pressable key={item} onPress={() => updateForm('gender', item)} style={[styles.chip, form.gender === item && styles.chipActive]}>
+                  <Text style={[styles.chipText, form.gender === item && styles.chipTextActive]}>{item}</Text>
+                </Pressable>
+              ))}
+            </View>
+
             <Text style={styles.label}>Select Services</Text>
             <View style={styles.row}>
               {SERVICE_OPTIONS.map((item) => {
                 const selected = form.skills.includes(item);
                 return (
-                  <Pressable key={item} onPress={() => toggleServiceForPricing(item)} style={[styles.chip, selected && styles.chipActive]}>
+                  <Pressable key={item} onPress={() => toggleService(item)} style={[styles.chip, selected && styles.chipActive]}>
                     <Text style={[styles.chipText, selected && styles.chipTextActive]}>{item}</Text>
                   </Pressable>
                 );
@@ -440,33 +433,44 @@ export default function PartnerProfileSetupScreen({ navigation }) {
         {currentStep.key === 'training' ? (
           <View>
             <View style={styles.infoBlock}>
-              <Text style={styles.infoTitle}>Training / Guidelines</Text>
-              <Text style={styles.infoText}>- App usage guide{"\n"}- Customer behavior rules{"\n"}- Cancellation policy</Text>
+              <Text style={styles.infoTitle}>Partner Terms & Conditions</Text>
+              <Text style={styles.termsIntro}>
+                By submitting, you agree to the following in brief:
+              </Text>
+              <Text style={styles.infoText}>
+                • You are an independent provider; your details must be truthful.{'\n'}
+                • Access is granted after verification and admin activation.{'\n'}
+                • Use the platform lawfully: no fraud, abuse, or misuse of customer data.{'\n'}
+                • Deliver services professionally; follow cancellation and payout rules. You handle your own taxes.{'\n'}
+                • We may update these terms or restrict access for legal or operational reasons.
+              </Text>
             </View>
             <Pressable onPress={() => updateForm('agreed', !form.agreed)} style={styles.checkboxRow}>
               <View style={[styles.checkbox, form.agreed && styles.checkboxChecked]}>
                 {form.agreed ? <MaterialIcons name="check" size={14} color="#FFFFFF" /> : null}
               </View>
-              <Text style={styles.checkboxText}>I agree to terms</Text>
+              <Text style={styles.checkboxText}>I agree to the Partner Terms & Conditions</Text>
             </Pressable>
           </View>
         ) : null}
 
-        <View style={styles.footerRow}>
-          <Pressable onPress={goBack} style={styles.secondaryBtn}>
-            <Text style={styles.secondaryBtnText}>{stepIndex === 0 ? 'Cancel' : 'Previous'}</Text>
-          </Pressable>
-          <Pressable onPress={goNext} style={styles.primaryBtn}>
-            <Text style={styles.primaryBtnText}>{stepIndex === ONBOARDING_STEPS.length - 1 ? 'Submit' : 'Continue'}</Text>
-          </Pressable>
-        </View>
-      </ScrollView>
+          <View style={[styles.footerRow, compact && styles.footerRowCompact]}>
+            <Pressable onPress={goBack} style={styles.secondaryBtn}>
+              <Text style={styles.secondaryBtnText}>{stepIndex === 0 ? 'Cancel' : 'Previous'}</Text>
+            </Pressable>
+            <Pressable onPress={goNext} style={styles.primaryBtn}>
+              <Text style={styles.primaryBtnText}>{stepIndex === ONBOARDING_STEPS.length - 1 ? 'Submit' : 'Continue'}</Text>
+            </Pressable>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#f0fcfa' },
+  flex: { flex: 1 },
   header: {
     height: 60,
     paddingHorizontal: 12,
@@ -481,6 +485,7 @@ const styles = StyleSheet.create({
   content: { paddingTop: 16, paddingBottom: 24 },
   stepText: { color: '#366855', fontWeight: '700', fontSize: fontScale(11), letterSpacing: 1.1, textTransform: 'uppercase' },
   mainTitle: { color: '#1f2a27', fontSize: fontScale(29), fontWeight: '800', marginTop: 8 },
+  mainTitleCompact: { fontSize: fontScale(24), lineHeight: 31 },
   sub: { color: '#4c5753', marginTop: 8, marginBottom: 14, fontSize: fontScale(13), lineHeight: 18 },
   flowCard: {
     padding: 12,
@@ -491,7 +496,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   flowTitle: { color: '#366855', fontWeight: '700', marginBottom: 4, fontSize: fontScale(12) },
-  flowLine: { color: '#2c3a35', fontSize: fontScale(12) },
+  flowLine: { color: '#2c3a35', fontSize: fontScale(12), lineHeight: 18, flexShrink: 1 },
   authCard: {
     borderRadius: 24,
     padding: 14,
@@ -545,9 +550,11 @@ const styles = StyleSheet.create({
   labelRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   resendText: { color: '#366855', fontWeight: '700', fontSize: fontScale(11), letterSpacing: 0.8 },
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
-  otpRow: { flexDirection: 'row', gap: 8, marginBottom: 12 },
+  otpRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 8, marginBottom: 12 },
   otpInput: {
-    width: 42,
+    flex: 1,
+    maxWidth: 56,
+    minWidth: 42,
     height: 42,
     borderRadius: 10,
     backgroundColor: '#deebe8',
@@ -597,8 +604,9 @@ const styles = StyleSheet.create({
   uploadBtnTextDone: { color: '#366855' },
   uploadFileText: { marginTop: 4, marginLeft: 4, color: '#5f6b66', fontSize: fontScale(10) },
   infoBlock: { backgroundColor: '#deebe8', borderRadius: 12, padding: 12, marginBottom: 12 },
-  infoTitle: { color: '#1f2a27', fontWeight: '700', marginBottom: 6, fontSize: fontScale(14) },
-  infoText: { color: '#4f5a56', lineHeight: 20, fontSize: fontScale(13) },
+  infoTitle: { color: '#1f2a27', fontWeight: '700', marginBottom: 8, fontSize: fontScale(15) },
+  termsIntro: { color: '#4f5a56', lineHeight: 20, fontSize: fontScale(12), marginBottom: 6 },
+  infoText: { color: '#4f5a56', lineHeight: 20, fontSize: fontScale(12) },
   checkboxRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 4 },
   checkbox: {
     width: 22,
@@ -611,8 +619,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   checkboxChecked: { backgroundColor: '#366855', borderColor: '#366855' },
-  checkboxText: { color: '#313c3b', fontWeight: '600' },
+  checkboxText: { color: '#313c3b', fontWeight: '600', flex: 1, flexShrink: 1 },
   footerRow: { marginTop: 8, flexDirection: 'row', gap: 10 },
+  footerRowCompact: { flexDirection: 'column' },
   secondaryBtn: {
     flex: 1,
     minHeight: 52,
