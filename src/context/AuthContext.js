@@ -1,5 +1,5 @@
 import React, { createContext, useMemo, useState } from 'react';
-import { loginUser, signupUser } from '../services/authService';
+import { loginUser, loginPartnerUser, signupUser } from '../services/authService';
 import { submitPartnerApplicationApi } from '../services/partnerApplicationService';
 
 export const AuthContext = createContext();
@@ -17,6 +17,18 @@ export const AuthProvider = ({ children }) => {
       const res = await loginUser(payload);
       setUser(res.user);
       setToken(res.token);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loginPartner = async (payload) => {
+    setLoading(true);
+    try {
+      const res = await loginPartnerUser(payload);
+      setUser(res.user);
+      setToken(res.token);
+      setRole('partner');
     } finally {
       setLoading(false);
     }
@@ -51,15 +63,17 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await submitPartnerApplicationApi(merged);
       const app = data.application || {};
+      const { password: _p, confirmPassword: _c, otp: _o, ...safeMerged } = merged;
       setPartnerApplication({
-        ...merged,
+        ...safeMerged,
         ...app,
         id: app.id,
         remoteId: app.id,
       });
     } catch (e) {
       syncError = e?.message || 'sync_failed';
-      setPartnerApplication({ ...merged, syncError });
+      const { password: _p, confirmPassword: _c, otp: _o, ...safeMerged } = merged;
+      setPartnerApplication({ ...safeMerged, syncError });
     }
     setRole('partner');
     return { syncError };
@@ -86,6 +100,7 @@ export const AuthProvider = ({ children }) => {
       loading,
       isAuthenticated: Boolean(token),
       login,
+      loginPartner,
       signup,
       setRole,
       logout,

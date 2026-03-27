@@ -25,6 +25,7 @@ const initialForm = {
   name: '',
   city: '',
   fullName: '',
+  email: '',
   address: '',
   age: '',
   gender: '',
@@ -37,15 +38,16 @@ const initialForm = {
   latitude: '',
   longitude: '',
   area: '',
-  city: '',
   accountHolder: '',
   accountNumber: '',
   ifsc: '',
   upi: '',
+  password: '',
+  confirmPassword: '',
   agreed: false,
 };
 
-function Field({ label, value, onChangeText, placeholder, keyboardType = 'default', editable = true }) {
+function Field({ label, value, onChangeText, placeholder, keyboardType = 'default', editable = true, autoCapitalize = 'sentences', secureTextEntry }) {
   return (
     <View style={styles.fieldWrap}>
       <Text style={styles.label}>{label}</Text>
@@ -54,6 +56,8 @@ function Field({ label, value, onChangeText, placeholder, keyboardType = 'defaul
         onChangeText={onChangeText}
         placeholder={placeholder}
         keyboardType={keyboardType}
+        autoCapitalize={autoCapitalize}
+        secureTextEntry={Boolean(secureTextEntry)}
         style={styles.input}
         placeholderTextColor="#8b9692"
         editable={editable}
@@ -63,7 +67,7 @@ function Field({ label, value, onChangeText, placeholder, keyboardType = 'defaul
 }
 
 export default function PartnerProfileSetupScreen({ navigation }) {
-  const { submitPartnerApplication } = useAuth();
+  const { user, submitPartnerApplication } = useAuth();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const compact = width < 360;
@@ -200,6 +204,8 @@ export default function PartnerProfileSetupScreen({ navigation }) {
       if (!form.address.trim()) return 'Address required hai.';
       if (!form.age.trim()) return 'Age required hai.';
       if (!form.experience.trim()) return 'Experience years dalo.';
+      if (String(form.password || '').length < 6) return 'Password kam se kam 6 characters ka ho.';
+      if (form.password !== form.confirmPassword) return 'Password aur confirm password match nahi kar rahe.';
     }
 
     if (currentStep.key === 'documents') {
@@ -240,8 +246,10 @@ export default function PartnerProfileSetupScreen({ navigation }) {
       return;
     }
 
+    const emailMerged = String(form.email || user?.email || '').trim();
     const { syncError } = await submitPartnerApplication({
       ...form,
+      email: emailMerged,
       flowStatus: 'pending',
       verificationStatus: 'verification_pending',
       reviewStatus: 'pending',
@@ -347,9 +355,33 @@ export default function PartnerProfileSetupScreen({ navigation }) {
         {currentStep.key === 'personal' ? (
           <View>
             <Field label="Full Name" value={form.fullName} onChangeText={(v) => updateForm('fullName', v)} placeholder="Full legal name" />
+            <Field
+              label="Email"
+              value={form.email}
+              onChangeText={(v) => updateForm('email', v)}
+              placeholder={user?.email ? `Default: ${user.email}` : 'name@example.com'}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
             <Field label="Address" value={form.address} onChangeText={(v) => updateForm('address', v)} placeholder="Complete address" />
             <Field label="Age" value={form.age} onChangeText={(v) => updateForm('age', v.replace(/[^0-9]/g, '').slice(0, 2))} placeholder="Age" keyboardType="number-pad" />
             <Field label="Experience (Years)" value={form.experience} onChangeText={(v) => updateForm('experience', v.replace(/[^0-9]/g, '').slice(0, 2))} placeholder="e.g. 5" keyboardType="number-pad" />
+            <Field
+              label="Password"
+              value={form.password}
+              onChangeText={(v) => updateForm('password', v)}
+              placeholder="Min. 6 characters (login after approval)"
+              secureTextEntry
+              autoCapitalize="none"
+            />
+            <Field
+              label="Confirm password"
+              value={form.confirmPassword}
+              onChangeText={(v) => updateForm('confirmPassword', v)}
+              placeholder="Repeat password"
+              secureTextEntry
+              autoCapitalize="none"
+            />
           </View>
         ) : null}
 
