@@ -21,7 +21,7 @@ import { ROLES } from '../../utils/constants';
 import { clamp, fontScale, moderateScale } from '../../utils/responsive';
 
 export default function LoginScreen({ navigation }) {
-  const { login, loginPartner, loading, setRole } = useAuth();
+  const { login, loading, setRole } = useAuth();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const compact = width < 370;
@@ -31,8 +31,6 @@ export default function LoginScreen({ navigation }) {
   const [otpSending, setOtpSending] = useState(false);
   /** Last mobile we successfully triggered MSG91 for (send or resend). */
   const [lastOtpMobile, setLastOtpMobile] = useState('');
-  const [partnerId, setPartnerId] = useState('');
-  const [partnerPassword, setPartnerPassword] = useState('');
   const otpRefs = useRef([]);
 
   const titleSize = useMemo(() => (compact ? fontScale(30) : fontScale(34)), [compact]);
@@ -55,29 +53,6 @@ export default function LoginScreen({ navigation }) {
       setRole(ROLES.CUSTOMER);
     } catch (error) {
       Alert.alert('Sign In Failed', error?.message || 'Please try again.');
-    }
-  };
-
-  const submitPartnerLogin = async () => {
-    const raw = partnerId.trim();
-    if (!raw) {
-      return Alert.alert('Partner sign in', 'Enter your email or 10-digit mobile.');
-    }
-    if (!partnerPassword) {
-      return Alert.alert('Partner sign in', 'Enter your password.');
-    }
-    try {
-      if (raw.includes('@')) {
-        await loginPartner({ email: raw.toLowerCase(), password: partnerPassword });
-      } else {
-        const digits = raw.replace(/\D/g, '');
-        if (digits.length < 10) {
-          return Alert.alert('Partner sign in', 'Enter a valid email or 10-digit mobile number.');
-        }
-        await loginPartner({ mobile: digits, password: partnerPassword });
-      }
-    } catch (error) {
-      Alert.alert('Partner sign in', error?.message || 'Please try again.');
     }
   };
 
@@ -134,14 +109,14 @@ export default function LoginScreen({ navigation }) {
             >
               <LinearGradient colors={['rgba(49,60,59,0.2)', 'rgba(49,60,59,0.6)', '#f0fcfa']} style={styles.heroOverlay}>
                 <Text style={styles.brand}>Emerald Pro</Text>
-                <Text style={styles.brandSub}>PARTNER ECOSYSTEM</Text>
+                <Text style={styles.brandSub}>CUSTOMER APP</Text>
               </LinearGradient>
             </ImageBackground>
           </View>
 
           <View style={[styles.formCard, { marginHorizontal: containerPadding, marginTop: -moderateScale(62), padding: containerPadding }]}>
             <Text style={[styles.heading, { fontSize: titleSize }]}>Welcome back</Text>
-            <Text style={styles.sub}>Enter your credentials to access your professional dashboard.</Text>
+            <Text style={styles.sub}>Enter your credentials to access your account.</Text>
 
             <View style={styles.fieldGroup}>
               <Text style={styles.label}>MOBILE NUMBER</Text>
@@ -202,41 +177,6 @@ export default function LoginScreen({ navigation }) {
               </LinearGradient>
             </Pressable>
 
-            <View style={styles.partnerBlock}>
-              <Text style={styles.partnerBlockTitle}>Approved partner?</Text>
-              <Text style={styles.partnerBlockSub}>Use the email or mobile and password from your application (after admin approval).</Text>
-              <View style={styles.fieldGroup}>
-                <Text style={styles.label}>EMAIL OR MOBILE</Text>
-                <TextInput
-                  value={partnerId}
-                  onChangeText={setPartnerId}
-                  placeholder="name@example.com or 10-digit mobile"
-                  keyboardType="default"
-                  autoCapitalize="none"
-                  style={styles.partnerTextInput}
-                  placeholderTextColor="#8A9792"
-                />
-              </View>
-              <View style={styles.fieldGroup}>
-                <Text style={styles.label}>PASSWORD</Text>
-                <TextInput
-                  value={partnerPassword}
-                  onChangeText={setPartnerPassword}
-                  placeholder="Your partner password"
-                  secureTextEntry
-                  style={styles.partnerTextInput}
-                  placeholderTextColor="#8A9792"
-                />
-              </View>
-              <Pressable
-                disabled={loading}
-                onPress={submitPartnerLogin}
-                style={({ pressed }) => [styles.partnerSignInBtn, pressed && styles.buttonPressed, loading && styles.buttonDisabled]}
-              >
-                <Text style={styles.partnerSignInText}>{loading ? 'Signing in...' : 'Partner sign in'}</Text>
-              </Pressable>
-            </View>
-
             <View style={styles.footerBlock}>
               <View style={styles.dividerRow}>
                 <View style={styles.divider} />
@@ -244,8 +184,8 @@ export default function LoginScreen({ navigation }) {
                 <View style={styles.divider} />
               </View>
 
-              <Pressable onPress={() => navigation.navigate('PartnerProfileSetup')}>
-                <Text style={styles.applyText}>Join as Partner</Text>
+              <Pressable onPress={() => navigation.navigate('Signup')}>
+                <Text style={styles.applyText}>Create account</Text>
               </Pressable>
             </View>
           </View>
@@ -332,34 +272,6 @@ const styles = StyleSheet.create({
   signInText: { color: '#FFFFFF', fontWeight: '700', fontSize: fontScale(18) },
   buttonPressed: { transform: [{ scale: 0.985 }] },
   buttonDisabled: { opacity: 0.7 },
-  partnerBlock: {
-    marginTop: 22,
-    paddingTop: 20,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(112,121,116,0.2)',
-  },
-  partnerBlockTitle: { color: '#313c3b', fontWeight: '700', fontSize: fontScale(14) },
-  partnerBlockSub: { color: '#5f6b66', fontSize: fontScale(12), lineHeight: 17, marginTop: 6, marginBottom: 4 },
-  partnerTextInput: {
-    minHeight: 52,
-    borderRadius: 12,
-    backgroundColor: '#deebe8',
-    paddingHorizontal: 14,
-    color: '#313c3b',
-    fontSize: fontScale(15),
-    borderWidth: 0,
-  },
-  partnerSignInBtn: {
-    marginTop: 4,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(54,104,85,0.45)',
-    backgroundColor: 'rgba(182,235,211,0.35)',
-    minHeight: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  partnerSignInText: { color: '#1c4f3e', fontWeight: '700', fontSize: fontScale(15) },
   footerBlock: { marginTop: 28, alignItems: 'center' },
   dividerRow: { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 16 },
   divider: { width: 30, height: 1, backgroundColor: 'rgba(112,121,116,0.35)' },

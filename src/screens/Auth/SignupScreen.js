@@ -56,14 +56,14 @@ export default function SignupScreen({ navigation }) {
             >
               <LinearGradient colors={['rgba(49,60,59,0.2)', 'rgba(49,60,59,0.7)', '#f0fcfa']} style={styles.heroOverlay}>
                 <Text style={styles.brand}>Emerald Pro</Text>
-                <Text style={styles.brandSub}>PARTNERSHIP APPLICATION</Text>
+                <Text style={styles.brandSub}>CUSTOMER REGISTRATION</Text>
               </LinearGradient>
             </ImageBackground>
           </View>
 
           <View style={[styles.formCard, { marginHorizontal: containerPadding, marginTop: -moderateScale(50), padding: containerPadding }]}>
-            <Text style={[styles.heading, { fontSize: headingSize }]}>Apply for partnership</Text>
-            <Text style={styles.sub}>Create your professional account and join our elite service network.</Text>
+            <Text style={[styles.heading, { fontSize: headingSize }]}>Create your account</Text>
+            <Text style={styles.sub}>Sign up to book beauty services quickly and securely.</Text>
 
             <View style={styles.fieldGroup}>
               <Text style={styles.label}>FULL NAME</Text>

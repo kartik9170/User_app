@@ -40,20 +40,6 @@ export const loginUser = async (payload) => {
   return { token: data.token, user: data.user };
 };
 
-/** After admin approves partner application; uses password from onboarding. */
-export const loginPartnerUser = async ({ email, mobile, password }) => {
-  if (!password) throw new Error('Password is required.');
-  if (!email && !mobile) throw new Error('Email or mobile is required.');
-  const res = await fetch(`${API_URL}/api/users/partner/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: email || undefined, mobile: mobile || undefined, password }),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || `Sign in failed (${res.status})`);
-  return { token: data.token, user: data.user };
-};
-
 export const signupUser = async (payload) => {
   try {
     const res = await fetch(`${API_URL}/api/users/register`, {
