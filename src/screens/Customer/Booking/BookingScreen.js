@@ -35,12 +35,12 @@ export default function BookingScreen({ route, navigation }) {
       <View style={styles.topBar}>
         <View style={styles.topLeft}>
           <Pressable onPress={() => navigation.goBack()} style={styles.iconBtn}>
-            <MaterialIcons name="arrow-back" size={22} color="#313c3b" />
+            <MaterialIcons name="arrow-back" size={22} color="#1E1E1E" />
           </Pressable>
           <Text style={styles.topTitle}>Schedule Booking</Text>
         </View>
         <View style={styles.brandRow}>
-          <MaterialIcons name="spa" size={18} color="#313c3b" />
+          <MaterialIcons name="spa" size={18} color="#1E1E1E" />
           <Text style={styles.brandText}>The Atelier</Text>
         </View>
       </View>
@@ -104,7 +104,7 @@ export default function BookingScreen({ route, navigation }) {
           <View style={styles.sectionHead}>
             <Text style={styles.sectionTitle}>Service Location</Text>
             <Pressable style={styles.addNewRow}>
-              <MaterialIcons name="add" size={16} color="#366855" />
+              <MaterialIcons name="add" size={16} color="#FF6B2C" />
               <Text style={styles.addNewText}>Add New</Text>
             </Pressable>
           </View>
@@ -114,7 +114,7 @@ export default function BookingScreen({ route, navigation }) {
               return (
                 <Pressable key={item.id} onPress={() => setSelectedAddress(item.id)} style={[styles.addressCard, active && styles.addressCardActive]}>
                   <View style={styles.addressIconWrap}>
-                    <MaterialIcons name={item.icon} size={19} color={active ? '#366855' : '#5f6b66'} />
+                    <MaterialIcons name={item.icon} size={19} color={active ? '#FF6B2C' : '#6B6B6B'} />
                   </View>
                   <View style={styles.addressInfo}>
                     <Text style={styles.addressTitle}>{item.title}</Text>
@@ -158,7 +158,7 @@ export default function BookingScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#f0fcfa' },
+  safeArea: { flex: 1, backgroundColor: '#EDE0D4' },
   topBar: {
     height: 64,
     paddingHorizontal: 14,
@@ -171,47 +171,47 @@ const styles = StyleSheet.create({
   },
   topLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   iconBtn: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
-  topTitle: { color: '#313c3b', fontSize: fontScale(19), fontWeight: '700' },
+  topTitle: { color: '#1E1E1E', fontSize: fontScale(19), fontWeight: '700' },
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  brandText: { color: '#313c3b', fontWeight: '800' },
+  brandText: { color: '#1E1E1E', fontWeight: '800' },
   content: { paddingHorizontal: 14, paddingTop: 12, paddingBottom: 120 },
   summaryCard: { borderRadius: 18, backgroundColor: '#FFFFFF', padding: 14, marginBottom: 14, borderWidth: 1, borderColor: 'rgba(192,201,195,0.35)' },
   summaryTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   summaryLabel: { color: '#6d7873', fontSize: fontScale(10), textTransform: 'uppercase', fontWeight: '700', letterSpacing: 1.2 },
-  summaryService: { color: '#313c3b', fontSize: fontScale(20), fontWeight: '700', marginTop: 2 },
+  summaryService: { color: '#1E1E1E', fontSize: fontScale(20), fontWeight: '700', marginTop: 2 },
   pricePill: { backgroundColor: 'rgba(182,235,211,0.45)', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 6 },
-  priceText: { color: '#1c4f3e', fontSize: fontScale(13), fontWeight: '800' },
+  priceText: { color: '#FF6B2C', fontSize: fontScale(13), fontWeight: '800' },
   durationRow: { marginTop: 10, flexDirection: 'row', alignItems: 'center', gap: 6 },
-  durationText: { color: '#5f6b66', fontSize: fontScale(12) },
+  durationText: { color: '#6B6B6B', fontSize: fontScale(12) },
   section: { marginBottom: 16 },
   sectionHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  sectionTitle: { color: '#313c3b', fontSize: fontScale(18), fontWeight: '700' },
-  sectionSub: { color: '#366855', fontSize: fontScale(12), fontWeight: '700' },
+  sectionTitle: { color: '#1E1E1E', fontSize: fontScale(18), fontWeight: '700' },
+  sectionSub: { color: '#FF6B2C', fontSize: fontScale(12), fontWeight: '700' },
   daysRow: { gap: 8 },
-  dayCard: { width: 64, height: 84, borderRadius: 14, backgroundColor: '#eaf6f4', alignItems: 'center', justifyContent: 'center' },
-  dayCardActive: { backgroundColor: '#366855' },
+  dayCard: { width: 64, height: 84, borderRadius: 14, backgroundColor: '#F5F5F5', alignItems: 'center', justifyContent: 'center' },
+  dayCardActive: { backgroundColor: '#FF6B2C' },
   dayLabel: { color: '#6d7873', fontSize: fontScale(10), fontWeight: '700' },
   dayLabelActive: { color: 'rgba(255,255,255,0.85)' },
-  dayDate: { color: '#313c3b', fontSize: fontScale(23), fontWeight: '800', marginTop: 2 },
+  dayDate: { color: '#1E1E1E', fontSize: fontScale(23), fontWeight: '800', marginTop: 2 },
   dayDateActive: { color: '#FFFFFF' },
   slotGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   slot: { width: '31.5%', minHeight: 42, borderRadius: 999, borderWidth: 1, borderColor: 'rgba(192,201,195,0.45)', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF' },
-  slotActive: { backgroundColor: '#366855', borderColor: '#366855' },
+  slotActive: { backgroundColor: '#FF6B2C', borderColor: '#FF6B2C' },
   slotDisabled: { opacity: 0.4 },
-  slotText: { color: '#404944', fontSize: fontScale(12), fontWeight: '600' },
+  slotText: { color: '#6B6B6B', fontSize: fontScale(12), fontWeight: '600' },
   slotTextActive: { color: '#FFFFFF', fontWeight: '700' },
   slotTextDisabled: { color: '#7a8681' },
   addNewRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  addNewText: { color: '#366855', fontSize: fontScale(12), fontWeight: '700' },
+  addNewText: { color: '#FF6B2C', fontSize: fontScale(12), fontWeight: '700' },
   addressList: { gap: 8 },
-  addressCard: { borderRadius: 16, backgroundColor: '#eaf6f4', borderWidth: 2, borderColor: 'transparent', padding: 12, flexDirection: 'row', alignItems: 'center' },
-  addressCardActive: { backgroundColor: '#FFFFFF', borderColor: '#366855' },
+  addressCard: { borderRadius: 16, backgroundColor: '#F5F5F5', borderWidth: 2, borderColor: 'transparent', padding: 12, flexDirection: 'row', alignItems: 'center' },
+  addressCardActive: { backgroundColor: '#FFFFFF', borderColor: '#FF6B2C' },
   addressIconWrap: { width: 34, height: 34, borderRadius: 17, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', marginRight: 8 },
   addressInfo: { flex: 1 },
-  addressTitle: { color: '#313c3b', fontSize: fontScale(14), fontWeight: '700' },
-  addressSub: { color: '#5f6b66', fontSize: fontScale(11), marginTop: 2 },
-  radioCircle: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: '#c0c9c3', alignItems: 'center', justifyContent: 'center' },
-  radioCircleActive: { borderColor: '#366855', backgroundColor: '#366855' },
+  addressTitle: { color: '#1E1E1E', fontSize: fontScale(14), fontWeight: '700' },
+  addressSub: { color: '#6B6B6B', fontSize: fontScale(11), marginTop: 2 },
+  radioCircle: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: '#DADADA', alignItems: 'center', justifyContent: 'center' },
+  radioCircleActive: { borderColor: '#FF6B2C', backgroundColor: '#FF6B2C' },
   radioDot: { width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#FFFFFF' },
   bottomBar: {
     position: 'absolute',
@@ -228,14 +228,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bottomLabel: { color: '#6d7873', fontSize: fontScale(10), fontWeight: '700', textTransform: 'uppercase' },
-  bottomPrice: { color: '#313c3b', fontSize: fontScale(22), fontWeight: '800' },
+  bottomPrice: { color: '#1E1E1E', fontSize: fontScale(22), fontWeight: '800' },
   actionsRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   bookBtn: {
     borderRadius: 12,
     minHeight: 44,
     minWidth: 132,
     paddingHorizontal: 14,
-    backgroundColor: '#366855',
+    backgroundColor: '#FF6B2C',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

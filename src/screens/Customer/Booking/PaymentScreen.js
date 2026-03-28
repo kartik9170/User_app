@@ -38,7 +38,7 @@ export default function PaymentScreen({ route, navigation }) {
       <View style={styles.topBar}>
         <View style={styles.topLeft}>
           <Pressable onPress={() => navigation.goBack()} style={styles.iconBtn}>
-            <MaterialIcons name="arrow-back" size={22} color="#366855" />
+            <MaterialIcons name="arrow-back" size={22} color="#FF6B2C" />
           </Pressable>
           <Text style={styles.topTitle}>Payment</Text>
         </View>
@@ -51,7 +51,7 @@ export default function PaymentScreen({ route, navigation }) {
         <View style={styles.summaryGrid}>
           <View style={styles.summaryBox}>
             <View style={styles.summaryHead}>
-              <MaterialIcons name="calendar-today" size={18} color="#366855" />
+              <MaterialIcons name="calendar-today" size={18} color="#FF6B2C" />
               <Text style={styles.summaryHeadText}>DATE & TIME</Text>
             </View>
             <Text style={styles.summaryMain}>{date || 'Tomorrow'}, {time || '4:00 PM'}</Text>
@@ -59,7 +59,7 @@ export default function PaymentScreen({ route, navigation }) {
           </View>
           <View style={styles.summaryBox}>
             <View style={styles.summaryHead}>
-              <MaterialIcons name="location-on" size={18} color="#366855" />
+              <MaterialIcons name="location-on" size={18} color="#FF6B2C" />
               <Text style={styles.summaryHeadText}>LOCATION</Text>
             </View>
             <Text style={styles.summaryMain}>Atelier Studio, Suite 402</Text>
@@ -122,43 +122,43 @@ export default function PaymentScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#f0fcfa' },
+  safeArea: { flex: 1, backgroundColor: '#EDE0D4' },
   topBar: { height: 62, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderColor: 'rgba(192,201,195,0.35)' },
   topLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   iconBtn: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
-  topTitle: { color: '#366855', fontSize: fontScale(19), fontWeight: '700' },
+  topTitle: { color: '#FF6B2C', fontSize: fontScale(19), fontWeight: '700' },
   content: { padding: 14, paddingBottom: 116 },
   sectionKicker: { color: '#3a6c59', fontSize: fontScale(10), fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.2 },
-  heading: { color: '#313c3b', fontSize: fontScale(30), fontWeight: '800', marginBottom: 10 },
+  heading: { color: '#1E1E1E', fontSize: fontScale(30), fontWeight: '800', marginBottom: 10 },
   summaryGrid: { gap: 8, marginBottom: 12 },
-  summaryBox: { borderRadius: 14, backgroundColor: '#eaf6f4', padding: 12 },
+  summaryBox: { borderRadius: 14, backgroundColor: '#F5F5F5', padding: 12 },
   summaryHead: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
-  summaryHeadText: { color: '#366855', fontSize: fontScale(10), fontWeight: '700', letterSpacing: 1.1 },
-  summaryMain: { color: '#313c3b', fontSize: fontScale(15), fontWeight: '700' },
-  summarySub: { color: '#5f6b66', fontSize: fontScale(11), marginTop: 2 },
+  summaryHeadText: { color: '#FF6B2C', fontSize: fontScale(10), fontWeight: '700', letterSpacing: 1.1 },
+  summaryMain: { color: '#1E1E1E', fontSize: fontScale(15), fontWeight: '700' },
+  summarySub: { color: '#6B6B6B', fontSize: fontScale(11), marginTop: 2 },
   methodSection: { marginBottom: 12 },
   methodHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 8 },
-  methodTitle: { color: '#313c3b', fontSize: fontScale(22), fontWeight: '700' },
+  methodTitle: { color: '#1E1E1E', fontSize: fontScale(22), fontWeight: '700' },
   methodSub: { color: '#6d7873', fontSize: fontScale(11) },
   methodCard: { borderRadius: 14, backgroundColor: '#FFFFFF', borderWidth: 2, borderColor: 'transparent', padding: 12, marginBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  methodCardActive: { borderColor: '#366855', backgroundColor: 'rgba(182,235,211,0.2)' },
+  methodCardActive: { borderColor: '#FF6B2C', backgroundColor: 'rgba(182,235,211,0.2)' },
   methodLeft: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1, marginRight: 8 },
-  methodIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#eaf6f4', alignItems: 'center', justifyContent: 'center' },
-  methodIconActive: { backgroundColor: '#366855' },
-  methodName: { color: '#313c3b', fontSize: fontScale(14), fontWeight: '700' },
-  methodInfo: { color: '#5f6b66', fontSize: fontScale(11), marginTop: 1 },
-  radio: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: '#c0c9c3', alignItems: 'center', justifyContent: 'center' },
-  radioActive: { borderColor: '#366855', backgroundColor: '#366855' },
+  methodIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#F5F5F5', alignItems: 'center', justifyContent: 'center' },
+  methodIconActive: { backgroundColor: '#FF6B2C' },
+  methodName: { color: '#1E1E1E', fontSize: fontScale(14), fontWeight: '700' },
+  methodInfo: { color: '#6B6B6B', fontSize: fontScale(11), marginTop: 1 },
+  radio: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: '#DADADA', alignItems: 'center', justifyContent: 'center' },
+  radioActive: { borderColor: '#FF6B2C', backgroundColor: '#FF6B2C' },
   radioDot: { width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#FFFFFF' },
-  demoHint: { color: '#5f6b66', fontSize: fontScale(11), marginTop: 2, marginLeft: 2 },
-  billCard: { borderRadius: 16, backgroundColor: '#313c3b', padding: 12 },
+  demoHint: { color: '#6B6B6B', fontSize: fontScale(11), marginTop: 2, marginLeft: 2 },
+  billCard: { borderRadius: 16, backgroundColor: '#1E1E1E', padding: 12 },
   billTitle: { color: '#FFFFFF', fontSize: fontScale(17), fontWeight: '700', marginBottom: 8 },
   billRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
   billLabel: { color: 'rgba(255,255,255,0.7)', fontSize: fontScale(12) },
   billValue: { color: '#FFFFFF', fontSize: fontScale(13), fontWeight: '700' },
   billDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.2)', marginVertical: 6 },
   billTotalLabel: { color: '#FFFFFF', fontSize: fontScale(14), fontWeight: '700' },
-  billTotalValue: { color: '#b9eed6', fontSize: fontScale(18), fontWeight: '800' },
+  billTotalValue: { color: '#FFA06A', fontSize: fontScale(18), fontWeight: '800' },
   footer: {
     position: 'absolute',
     left: 0,
@@ -175,6 +175,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   footerLabel: { color: '#6d7873', fontSize: fontScale(10), fontWeight: '700', textTransform: 'uppercase' },
-  footerPrice: { color: '#313c3b', fontSize: fontScale(20), fontWeight: '800' },
+  footerPrice: { color: '#1E1E1E', fontSize: fontScale(20), fontWeight: '800' },
   placeBtn: { minWidth: 145, marginVertical: 0 },
 });

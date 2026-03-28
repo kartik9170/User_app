@@ -65,7 +65,7 @@ export default function CategoryServicesScreen({ route, navigation }) {
       <View style={styles.topBar}>
         <View style={styles.topLeft}>
           <Pressable onPress={() => navigation.goBack()} style={styles.iconBtn}>
-            <MaterialIcons name="arrow-back" size={22} color="#313c3b" />
+            <MaterialIcons name="arrow-back" size={22} color="#1E1E1E" />
           </Pressable>
           <Text style={styles.title}>{category} Services</Text>
         </View>
@@ -128,7 +128,7 @@ export default function CategoryServicesScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#f0fcfa' },
+  safeArea: { flex: 1, backgroundColor: '#EDE0D4' },
   topBar: {
     height: 62,
     paddingHorizontal: 14,
@@ -140,23 +140,23 @@ const styles = StyleSheet.create({
   },
   topLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   iconBtn: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
-  title: { color: '#313c3b', fontSize: fontScale(20), fontWeight: '800' },
-  count: { color: '#5f6b66', fontSize: fontScale(12), fontWeight: '600' },
+  title: { color: '#1E1E1E', fontSize: fontScale(20), fontWeight: '800' },
+  count: { color: '#6B6B6B', fontSize: fontScale(12), fontWeight: '600' },
   content: { padding: 14, paddingBottom: 20 },
   headSection: { marginBottom: 8 },
-  heroTitle: { color: '#313c3b', fontSize: fontScale(23), fontWeight: '800' },
-  heroSub: { color: '#5f6b66', fontSize: fontScale(12), marginTop: 2 },
+  heroTitle: { color: '#1E1E1E', fontSize: fontScale(23), fontWeight: '800' },
+  heroSub: { color: '#6B6B6B', fontSize: fontScale(12), marginTop: 2 },
   searchWrap: {
     borderRadius: 12,
-    backgroundColor: '#deebe8',
+    backgroundColor: '#F5F5F5',
     minHeight: 48,
     paddingHorizontal: 10,
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
   },
-  searchInput: { flex: 1, marginLeft: 8, color: '#313c3b', fontSize: fontScale(13), borderWidth: 0, outlineWidth: 0, outlineColor: 'transparent' },
-  searchBtn: { borderRadius: 9, backgroundColor: '#366855', paddingHorizontal: 11, paddingVertical: 7 },
+  searchInput: { flex: 1, marginLeft: 8, color: '#1E1E1E', fontSize: fontScale(13), borderWidth: 0, outlineWidth: 0, outlineColor: 'transparent' },
+  searchBtn: { borderRadius: 9, backgroundColor: '#FF6B2C', paddingHorizontal: 11, paddingVertical: 7 },
   searchBtnText: { color: '#FFFFFF', fontSize: fontScale(11), fontWeight: '700' },
   card: {
     borderRadius: 14,
@@ -169,14 +169,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 8,
   },
-  image: { width: 90, height: 90, borderRadius: 10, backgroundColor: '#d9e5e3', marginRight: 10 },
+  image: { width: 90, height: 90, borderRadius: 10, backgroundColor: '#DADADA', marginRight: 10 },
   body: { flex: 1, paddingRight: 2 },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
-  name: { color: '#313c3b', fontSize: fontScale(15), fontWeight: '700', flex: 1, marginRight: 6 },
-  price: { color: '#366855', fontSize: fontScale(13), fontWeight: '800' },
-  desc: { color: '#5f6b66', fontSize: fontScale(11), marginTop: 3, lineHeight: 16 },
+  name: { color: '#1E1E1E', fontSize: fontScale(15), fontWeight: '700', flex: 1, marginRight: 6 },
+  price: { color: '#FF6B2C', fontSize: fontScale(13), fontWeight: '800' },
+  desc: { color: '#6B6B6B', fontSize: fontScale(11), marginTop: 3, lineHeight: 16 },
   meta: { color: '#6d7873', fontSize: fontScale(10), fontWeight: '600', marginTop: 5 },
-  emptyWrap: { borderRadius: 12, backgroundColor: '#eaf6f4', padding: 14, alignItems: 'center', marginTop: 4 },
-  emptyTitle: { color: '#313c3b', fontSize: fontScale(14), fontWeight: '700' },
+  emptyWrap: { borderRadius: 12, backgroundColor: '#F5F5F5', padding: 14, alignItems: 'center', marginTop: 4 },
+  emptyTitle: { color: '#1E1E1E', fontSize: fontScale(14), fontWeight: '700' },
   emptySub: { color: '#6d7873', fontSize: fontScale(11), marginTop: 2 },
 });

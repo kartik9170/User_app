@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
   Alert,
-  ImageBackground,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -12,30 +11,37 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import useAuth from '../../hooks/useAuth';
 import { isRequired, isStrongPassword, isValidEmail } from '../../utils/validation';
+import { AuthTabs, BookiLogo, BOOKI, UnderlineField, UnderlineTextInput } from '../../components/BookiAuthChrome';
 import { clamp, fontScale, moderateScale } from '../../utils/responsive';
 
 export default function SignupScreen({ navigation }) {
   const { signup, loading } = useAuth();
+  const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
-  const compact = width < 370;
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [mobileFocused, setMobileFocused] = useState(false);
+  const [passFocused, setPassFocused] = useState(false);
+  const [confirmFocused, setConfirmFocused] = useState(false);
 
-  const headingSize = useMemo(() => (compact ? fontScale(30) : fontScale(34)), [compact]);
-  const containerPadding = clamp(width * 0.06, 18, 26);
-  const heroHeight = clamp(width * 0.62, 220, 290);
+  const pad = clamp(width * 0.06, 18, 24);
+  const emailOk = useMemo(() => isValidEmail(email), [email]);
 
   const submit = async () => {
     if (!isRequired(name)) return Alert.alert('Name Required', 'Please enter your name.');
     if (!isValidEmail(email)) return Alert.alert('Invalid Email', 'Please enter a valid email.');
     if (mobile.trim().length < 10) return Alert.alert('Invalid Mobile Number', 'Please enter a valid 10 digit mobile number.');
     if (!isStrongPassword(password)) return Alert.alert('Weak Password', 'Password should be at least 6 characters.');
+    if (password !== confirmPassword) return Alert.alert('Mismatch', 'Passwords do not match.');
     try {
       await signup({ name, email, password, mobile });
     } catch {
@@ -44,78 +50,103 @@ export default function SignupScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.select({ ios: 'padding', android: undefined })}>
-        <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
-          <View style={[styles.heroWrap, { height: heroHeight }]}>
-            <ImageBackground
-              source={{
-                uri: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80',
-              }}
-              style={styles.heroImage}
-            >
-              <LinearGradient colors={['rgba(49,60,59,0.2)', 'rgba(49,60,59,0.7)', '#f0fcfa']} style={styles.heroOverlay}>
-                <Text style={styles.brand}>Emerald Pro</Text>
-                <Text style={styles.brandSub}>CUSTOMER REGISTRATION</Text>
-              </LinearGradient>
-            </ImageBackground>
-          </View>
-
-          <View style={[styles.formCard, { marginHorizontal: containerPadding, marginTop: -moderateScale(50), padding: containerPadding }]}>
-            <Text style={[styles.heading, { fontSize: headingSize }]}>Create your account</Text>
-            <Text style={styles.sub}>Sign up to book beauty services quickly and securely.</Text>
-
-            <View style={styles.fieldGroup}>
-              <Text style={styles.label}>FULL NAME</Text>
-              <TextInput value={name} onChangeText={setName} placeholder="Enter full name" style={styles.input} placeholderTextColor="#8A9792" />
+        <ScrollView
+          contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 28 }]}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={[styles.sheet, { marginHorizontal: pad, marginTop: moderateScale(16), padding: pad }]}>
+            <View style={styles.logoHeader}>
+              <BookiLogo size={34} compact />
             </View>
 
-            <View style={styles.fieldGroup}>
-              <Text style={styles.label}>EMAIL ADDRESS</Text>
-              <TextInput
-                value={email}
-                onChangeText={setEmail}
-                placeholder="name@example.com"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                style={styles.input}
-                placeholderTextColor="#8A9792"
-              />
-            </View>
+            <AuthTabs active="signup" navigation={navigation} />
 
-            <View style={styles.fieldGroup}>
-              <Text style={styles.label}>MOBILE NUMBER</Text>
+            <Text style={styles.headline}>Create Account</Text>
+            <Text style={styles.sub}>Join BOOKI to book beauty and wellness in seconds.</Text>
+
+            <UnderlineTextInput label="Full Name" value={name} onChangeText={setName} placeholder="Your full name" autoCapitalize="words" />
+
+            <UnderlineTextInput
+              label="Email"
+              value={email}
+              onChangeText={setEmail}
+              placeholder="name@example.com"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              right={
+                emailOk ? <MaterialIcons name="check-circle" size={22} color={BOOKI.success} /> : <View style={{ width: 22 }} />
+              }
+            />
+
+            <UnderlineField label="Mobile Number" focused={mobileFocused}>
+              <Text style={styles.cc}>+91</Text>
               <TextInput
                 value={mobile}
-                onChangeText={(value) => setMobile(value.replace(/[^0-9]/g, '').slice(0, 10))}
-                placeholder="10 digit mobile number"
+                onChangeText={(v) => setMobile(v.replace(/[^0-9]/g, '').slice(0, 10))}
+                placeholder="10 digit number"
                 keyboardType="phone-pad"
-                style={styles.input}
-                placeholderTextColor="#8A9792"
                 maxLength={10}
+                placeholderTextColor={BOOKI.muted}
+                style={styles.flexInput}
+                onFocus={() => setMobileFocused(true)}
+                onBlur={() => setMobileFocused(false)}
               />
-            </View>
+              <MaterialIcons name="smartphone" size={22} color={mobile.length === 10 ? BOOKI.success : BOOKI.muted} />
+            </UnderlineField>
 
-            <View style={styles.fieldGroup}>
-              <Text style={styles.label}>PASSWORD</Text>
+            <UnderlineField label="Password" focused={passFocused}>
               <TextInput
                 value={password}
                 onChangeText={setPassword}
-                placeholder="Create strong password"
-                secureTextEntry
-                style={styles.input}
-                placeholderTextColor="#8A9792"
+                placeholder="••••••••"
+                placeholderTextColor={BOOKI.muted}
+                secureTextEntry={!showPass}
+                style={styles.flexInput}
+                onFocus={() => setPassFocused(true)}
+                onBlur={() => setPassFocused(false)}
               />
-            </View>
+              <Pressable onPress={() => setShowPass((p) => !p)} hitSlop={8}>
+                <MaterialIcons name={showPass ? 'visibility-off' : 'visibility'} size={22} color={BOOKI.muted} />
+              </Pressable>
+            </UnderlineField>
 
-            <Pressable disabled={loading} onPress={submit} style={({ pressed }) => [styles.submitButton, pressed && styles.buttonPressed, loading && styles.buttonDisabled]}>
-              <LinearGradient colors={['#366855', '#025d47']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.submitGradient}>
-                <Text style={styles.submitText}>{loading ? 'Creating account...' : 'Create account'}</Text>
-              </LinearGradient>
+            <UnderlineField label="Confirm Password" focused={confirmFocused}>
+              <TextInput
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                placeholder="••••••••"
+                placeholderTextColor={BOOKI.muted}
+                secureTextEntry={!showConfirm}
+                style={styles.flexInput}
+                onFocus={() => setConfirmFocused(true)}
+                onBlur={() => setConfirmFocused(false)}
+              />
+              <Pressable onPress={() => setShowConfirm((p) => !p)} hitSlop={8}>
+                <MaterialIcons name={showConfirm ? 'visibility-off' : 'visibility'} size={22} color={BOOKI.muted} />
+              </Pressable>
+            </UnderlineField>
+
+            <Pressable
+              disabled={loading}
+              onPress={submit}
+              style={({ pressed }) => [styles.primaryBtn, pressed && styles.primaryBtnPressed, loading && styles.primaryBtnDisabled]}
+            >
+              <Text style={styles.primaryBtnText}>{loading ? 'Creating account...' : 'Create Account'}</Text>
             </Pressable>
 
-            <Pressable onPress={() => navigation.navigate('Login')}>
-              <Text style={styles.backText}>Already have an account? Sign in</Text>
+            <Text style={styles.terms}>
+              By creating an account you are accepting our{' '}
+              <Text style={styles.termsBold} onPress={() => Alert.alert('Terms', 'Terms of Service — add your URL later.')}>
+                Terms of Services
+              </Text>
+              .
+            </Text>
+
+            <Pressable style={styles.signInRow} onPress={() => navigation.navigate('Login')}>
+              <Text style={styles.signInText}>Already have an account? Sign in</Text>
             </Pressable>
           </View>
         </ScrollView>
@@ -125,42 +156,49 @@ export default function SignupScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#f0fcfa' },
+  safe: { flex: 1, backgroundColor: BOOKI.bg },
   flex: { flex: 1 },
-  scrollContainer: { flexGrow: 1, backgroundColor: '#f0fcfa', paddingBottom: 24 },
-  heroWrap: { width: '100%', backgroundColor: '#313c3b' },
-  heroImage: { width: '100%', height: '100%' },
-  heroOverlay: { flex: 1, justifyContent: 'flex-start', paddingTop: 38, paddingHorizontal: 24 },
-  brand: { color: '#FFFFFF', fontSize: fontScale(30), fontWeight: '900', fontStyle: 'italic' },
-  brandSub: { color: '#b9eed6', fontSize: fontScale(10), letterSpacing: 2.2, marginTop: 4 },
-  formCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 30,
-    shadowColor: '#131e1c',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.08,
-    shadowRadius: 20,
-    elevation: 4,
-  },
-  heading: { color: '#313c3b', fontWeight: '700', letterSpacing: -0.6 },
-  sub: { color: '#404944', marginTop: 8, marginBottom: 24, fontSize: fontScale(14), lineHeight: 20 },
-  fieldGroup: { marginBottom: 14 },
-  label: { color: '#4f5a56', fontSize: fontScale(11), fontWeight: '700', letterSpacing: 1.5, marginBottom: 8 },
-  input: {
-    minHeight: 54,
+  scroll: { flexGrow: 1, backgroundColor: BOOKI.bg },
+  sheet: {
+    backgroundColor: BOOKI.white,
     borderRadius: 12,
-    backgroundColor: '#deebe8',
-    borderWidth: 0,
-    outlineWidth: 0,
-    outlineColor: 'transparent',
-    paddingHorizontal: 14,
-    color: '#313c3b',
-    fontSize: fontScale(15),
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 5,
   },
-  submitButton: { borderRadius: 14, overflow: 'hidden', marginTop: 8 },
-  submitGradient: { height: 56, alignItems: 'center', justifyContent: 'center' },
-  submitText: { color: '#FFFFFF', fontWeight: '700', fontSize: fontScale(17) },
-  buttonPressed: { transform: [{ scale: 0.985 }] },
-  buttonDisabled: { opacity: 0.7 },
-  backText: { textAlign: 'center', marginTop: 18, color: '#366855', fontWeight: '700', fontSize: fontScale(14) },
+  logoHeader: { alignItems: 'center', marginBottom: 4 },
+  headline: {
+    fontSize: fontScale(26),
+    fontWeight: '800',
+    color: BOOKI.charcoal,
+    marginTop: 16,
+    letterSpacing: -0.5,
+  },
+  sub: { color: BOOKI.muted, marginTop: 8, marginBottom: 12, fontSize: fontScale(14), lineHeight: 20 },
+  cc: { fontWeight: '700', color: BOOKI.charcoal, marginRight: 10, fontSize: fontScale(15) },
+  flexInput: { flex: 1, fontSize: fontScale(16), color: BOOKI.charcoal, paddingVertical: 4 },
+  primaryBtn: {
+    marginTop: 8,
+    minHeight: 54,
+    borderRadius: 6,
+    backgroundColor: BOOKI.charcoal,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  primaryBtnPressed: { opacity: 0.92 },
+  primaryBtnDisabled: { opacity: 0.65 },
+  primaryBtnText: { color: BOOKI.white, fontSize: fontScale(17), fontWeight: '700' },
+  terms: {
+    marginTop: 22,
+    textAlign: 'center',
+    fontSize: fontScale(13),
+    lineHeight: 20,
+    color: BOOKI.muted,
+    fontFamily: Platform.select({ ios: 'Georgia', android: 'serif' }),
+  },
+  termsBold: { fontWeight: '700', color: BOOKI.charcoal },
+  signInRow: { marginTop: 18, alignItems: 'center' },
+  signInText: { fontSize: fontScale(14), fontWeight: '700', color: BOOKI.orange },
 });

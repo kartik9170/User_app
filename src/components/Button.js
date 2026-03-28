@@ -17,7 +17,7 @@ export default function Button({ title, onPress, variant = 'primary', disabled =
       onPress={onPress}
       activeOpacity={0.9}
     >
-      {loading ? <ActivityIndicator color={secondary ? '#111827' : '#fff'} /> : <Text style={[styles.txt, secondary ? styles.dark : styles.light]}>{title}</Text>}
+      {loading ? <ActivityIndicator color={secondary ? '#1E1E1E' : '#fff'} /> : <Text style={[styles.txt, secondary ? styles.dark : styles.light]}>{title}</Text>}
     </TouchableOpacity>
   );
 }
@@ -31,21 +31,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: verticalScale(50),
   },
-  primary: { backgroundColor: '#366855' },
+  primary: { backgroundColor: '#FF6B2C' },
   secondary: {
-    backgroundColor: '#f0fcfa',
+    backgroundColor: '#EDE0D4',
     borderWidth: 1.5,
     borderColor: '#9dd2bb',
   },
   primaryShadow: {
-    shadowColor: '#1c4f3e',
+    shadowColor: '#FF6B2C',
     shadowOpacity: 0.25,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 6 },
     elevation: 4,
   },
   secondaryShadow: {
-    shadowColor: '#131e1c',
+    shadowColor: '#1E1E1E',
     shadowOpacity: 0.06,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
@@ -53,6 +53,6 @@ const styles = StyleSheet.create({
   },
   disabled: { opacity: 0.6 },
   txt: { fontWeight: '700', fontSize: fontScale(15), letterSpacing: 0.3 },
-  dark: { color: '#1c4f3e' },
+  dark: { color: '#FF6B2C' },
   light: { color: '#FFFFFF' }
 });

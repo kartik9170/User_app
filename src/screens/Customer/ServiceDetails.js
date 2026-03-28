@@ -56,16 +56,16 @@ export default function ServiceDetails({ route, navigation }) {
       <View style={styles.topBar}>
         <View style={styles.topLeft}>
           <Pressable onPress={() => navigation.goBack()} style={styles.iconBtn}>
-            <MaterialIcons name="arrow-back" size={22} color="#131e1c" />
+            <MaterialIcons name="arrow-back" size={22} color="#1E1E1E" />
           </Pressable>
           <Text style={styles.brand}>The Atelier</Text>
         </View>
         <View style={styles.topRight}>
           <Pressable style={styles.iconBtn}>
-            <MaterialIcons name="share" size={20} color="#404944" />
+            <MaterialIcons name="share" size={20} color="#6B6B6B" />
           </Pressable>
           <Pressable style={styles.iconBtn}>
-            <MaterialIcons name="favorite-border" size={20} color="#404944" />
+            <MaterialIcons name="favorite-border" size={20} color="#6B6B6B" />
           </Pressable>
         </View>
       </View>
@@ -78,7 +78,7 @@ export default function ServiceDetails({ route, navigation }) {
             <View style={styles.titleLeft}>
               <Text style={styles.name}>{service.name}</Text>
               <View style={styles.ratingRow}>
-                <MaterialIcons name="star" size={14} color="#366855" />
+                <MaterialIcons name="star" size={14} color="#FF6B2C" />
                 <Text style={styles.ratingText}>{service.rating || 4.8}</Text>
                 <Text style={styles.reviewCount}>({service.reviews || 0} reviews)</Text>
               </View>
@@ -92,14 +92,14 @@ export default function ServiceDetails({ route, navigation }) {
           <View style={styles.metaGrid}>
             <View style={styles.metaCard}>
               <View style={styles.metaIconCircle}>
-                <MaterialIcons name="schedule" size={18} color="#366855" />
+                <MaterialIcons name="schedule" size={18} color="#FF6B2C" />
               </View>
               <Text style={styles.metaLabel}>Duration</Text>
               <Text style={styles.metaValue}>{service.duration}</Text>
             </View>
             <View style={styles.metaCard}>
               <View style={styles.metaIconCircleAlt}>
-                <MaterialIcons name="spa" size={18} color="#025d47" />
+                <MaterialIcons name="spa" size={18} color="#2C2C2C" />
               </View>
               <Text style={styles.metaLabel}>Chapter</Text>
               <Text style={styles.metaValue}>{service.category}</Text>
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   topLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   topRight: { flexDirection: 'row', gap: 4 },
   iconBtn: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
-  brand: { color: '#131e1c', fontSize: fontScale(16), fontWeight: '800' },
+  brand: { color: '#1E1E1E', fontSize: fontScale(16), fontWeight: '800' },
   content: { paddingBottom: 28 },
   infoCard: {
     marginTop: -24,
@@ -152,16 +152,16 @@ const styles = StyleSheet.create({
   },
   titleRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 12 },
   titleLeft: { flex: 1 },
-  name: { color: '#131e1c', fontSize: fontScale(22), fontWeight: '800' },
+  name: { color: '#1E1E1E', fontSize: fontScale(22), fontWeight: '800' },
   ratingRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 6 },
-  ratingText: { color: '#366855', fontSize: fontScale(12), fontWeight: '700' },
+  ratingText: { color: '#FF6B2C', fontSize: fontScale(12), fontWeight: '700' },
   reviewCount: { color: '#6d7873', fontSize: fontScale(11) },
-  price: { color: '#366855', fontSize: fontScale(20), fontWeight: '800', textAlign: 'right' },
+  price: { color: '#FF6B2C', fontSize: fontScale(20), fontWeight: '800', textAlign: 'right' },
   tax: { color: '#6d7873', fontSize: fontScale(10), textAlign: 'right', marginTop: 2 },
   metaGrid: { flexDirection: 'row', gap: 10, marginTop: 16 },
   metaCard: {
     flex: 1,
-    backgroundColor: '#f0fcfa',
+    backgroundColor: '#EDE0D4',
     borderRadius: 14,
     padding: 12,
     borderWidth: 1,
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#eaf6f4',
+    backgroundColor: '#F5F5F5',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 6,
@@ -186,15 +186,15 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   metaLabel: { color: '#6d7873', fontSize: fontScale(10), fontWeight: '600' },
-  metaValue: { color: '#131e1c', fontSize: fontScale(13), fontWeight: '700', marginTop: 2 },
-  aboutTitle: { marginTop: 18, color: '#131e1c', fontSize: fontScale(14), fontWeight: '800' },
-  desc: { color: '#5f6b66', fontSize: fontScale(13), lineHeight: 20, marginTop: 6 },
+  metaValue: { color: '#1E1E1E', fontSize: fontScale(13), fontWeight: '700', marginTop: 2 },
+  aboutTitle: { marginTop: 18, color: '#1E1E1E', fontSize: fontScale(14), fontWeight: '800' },
+  desc: { color: '#6B6B6B', fontSize: fontScale(13), lineHeight: 20, marginTop: 6 },
   chipsWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 },
-  chip: { backgroundColor: '#eaf6f4', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999 },
-  chipText: { color: '#366855', fontSize: fontScale(11), fontWeight: '700' },
+  chip: { backgroundColor: '#F5F5F5', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999 },
+  chipText: { color: '#FF6B2C', fontSize: fontScale(11), fontWeight: '700' },
   cta: {
     marginTop: 20,
-    backgroundColor: '#366855',
+    backgroundColor: '#FF6B2C',
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',

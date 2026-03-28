@@ -1,189 +1,258 @@
 import React from 'react';
-import { ImageBackground, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import {
+  ImageBackground,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { StatusBar } from 'expo-status-bar';
+import { BookiLogo, BOOKI } from '../../components/BookiAuthChrome';
 import { clamp, fontScale, moderateScale, verticalScale } from '../../utils/responsive';
 
+const FEATURES = [
+  { icon: 'event-available', label: 'Book slots' },
+  { icon: 'spa', label: 'Salon & spa' },
+  { icon: 'favorite', label: 'Your picks' },
+];
+
 export default function SplashScreen({ navigation }) {
+  const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
-  const compact = width < 360 || height < 700;
-  const logoSize = compact ? fontScale(46) : width > 430 ? fontScale(64) : fontScale(56);
-  const iconSize = compact ? 30 : 36;
-  const horizontalPadding = clamp(width * 0.072, 18, 34);
-  const topPadding = clamp(height * 0.085, 56, 98);
-  const bottomPadding = clamp(height * 0.06, 36, 62);
-  const centerTopOffset = clamp(height * 0.045, 22, 46);
-  const lineWidth = clamp(width * 0.08, 22, 34);
-  const glowSize = clamp(width * 0.58, 190, 260);
+  /** Shorter side keeps blobs proportional so they stay mostly inside the clipped area. */
+  const shortSide = Math.min(width, height);
+  const blobL = clamp(shortSide * 0.5, 150, 240);
 
   return (
-    <LinearGradient colors={['#1c4f3e', '#091413']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.container}>
-      <StatusBar style="light" />
-      <View pointerEvents="none" style={[styles.abstractTopBorder, { top: -height * 0.07, left: -width * 0.1, borderTopLeftRadius: moderateScale(120) }]} />
-      <View pointerEvents="none" style={[styles.abstractGlow, { bottom: -height * 0.03, right: -width * 0.08, width: glowSize, height: glowSize, borderRadius: glowSize / 2 }]} />
-
+    <View style={styles.root}>
+      <StatusBar barStyle="dark-content" />
       <ImageBackground
         source={{
-          uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAelJ53B_fovtms6pO4IleCKkuLmEJv33SIs3L_AigTZFwGxWPrg9YLYArJQEhzd76W2xR5gWCY3NnXsu5Fd2IoFZai8E03VkT76Y0pBQcRZAd4y9XsbOh1VKgM15Fghpv2MFgrKS1vGuU3iVby5F_NxhaaJPp2SAy2aUCUuIUkYyjKxgdKLTa6UL2OX_plVUBwoX4ZXWJDlP_gwEgDSLXG9PUwtTgaK-oXuRTTEJMm1GhIKwqE2_TXLsJQwq61veKX3LqV2EChkhQ',
+          uri: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1400&q=80',
         }}
-        resizeMode="cover"
-        style={styles.textureLayer}
-        imageStyle={styles.textureImage}
+        style={styles.bg}
+        imageStyle={styles.bgImage}
       >
-        <View style={[styles.content, { paddingTop: topPadding, paddingBottom: bottomPadding, paddingHorizontal: horizontalPadding }]}>
-          <View style={[styles.centerBlock, { marginTop: centerTopOffset }]}>
-            <MaterialIcons name="spa" size={iconSize} color="#f0fcfa" style={styles.spaIcon} />
+        <View
+          style={[
+            styles.overlay,
+            {
+              paddingTop: insets.top + 8,
+              paddingBottom: Math.max(insets.bottom, 10),
+            },
+          ]}
+        >
+          <View
+            pointerEvents="none"
+            style={[styles.blobOrange, { width: blobL, height: blobL, borderRadius: blobL / 2 }]}
+          />
+          <View
+            pointerEvents="none"
+            style={[
+              styles.blobCharcoal,
+              {
+                width: blobL * 0.85,
+                height: blobL * 0.85,
+                borderRadius: (blobL * 0.85) / 2,
+              },
+            ]}
+          />
+          <View pointerEvents="none" style={styles.sparkle} />
 
-            <Text style={[styles.logo, { fontSize: logoSize }]}>ATELIER</Text>
+          <View style={styles.topBadge}>
+            <MaterialIcons name="person-outline" size={14} color={BOOKI.orange} />
+            <Text style={styles.badgeText}>Customer app</Text>
+          </View>
 
-            <View style={styles.taglineRow}>
-              <View style={[styles.line, { width: lineWidth }]} />
-              <Text style={styles.tagline}>Experience the Art of Beauty</Text>
-              <View style={[styles.line, { width: lineWidth }]} />
+          <View style={styles.center}>
+            <BookiLogo size={50} />
+            <Text style={styles.headline}>Beauty & wellness,{'\n'}on your schedule</Text>
+            <Text style={styles.sub}>
+              Book trusted salons and professionals, manage visits, and discover offers — all in one place.
+            </Text>
+
+            <View style={styles.featureRow}>
+              {FEATURES.map((f) => (
+                <View key={f.label} style={styles.featureChip}>
+                  <MaterialIcons name={f.icon} size={18} color={BOOKI.orange} />
+                  <Text style={styles.featureText}>{f.label}</Text>
+                </View>
+              ))}
             </View>
           </View>
 
-          <View style={styles.bottomArea}>
-            <View style={styles.estRow}>
-              <Text style={styles.estText}>EST. MMXXIV</Text>
-              <View style={styles.estLine} />
-              <Text style={styles.estText}>PREMIUM PRO</Text>
-            </View>
-
-            <Pressable onPress={() => navigation.navigate('Login')} style={({ pressed }) => [styles.ctaButton, pressed && styles.ctaPressed]}>
-              <LinearGradient colors={['#366855', '#025d47']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.ctaGradient}>
-                <Text style={styles.ctaText}>Explore the Atelier</Text>
-                <MaterialIcons name="arrow-forward" size={20} color="#FFFFFF" />
-              </LinearGradient>
+          <View style={styles.bottom}>
+            <Pressable
+              onPress={() => navigation.navigate('Login')}
+              style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}
+            >
+              <Text style={styles.ctaText}>Get started</Text>
+              <MaterialIcons name="arrow-forward" size={20} color={BOOKI.white} />
             </Pressable>
-
-            <Text style={styles.footerText}>CURATED PROFESSIONAL EXCELLENCE</Text>
+            <Pressable
+              onPress={() => navigation.navigate('Signup')}
+              style={({ pressed }) => [styles.secondaryBtn, pressed && styles.secondaryPressed]}
+            >
+              <Text style={styles.secondaryText}>New here? Create an account</Text>
+            </Pressable>
+            <Text style={styles.hint}>Free to join · Secure booking</Text>
           </View>
         </View>
       </ImageBackground>
-    </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#091413',
-    overflow: 'hidden',
-  },
-  textureLayer: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-  },
-  textureImage: {
-    opacity: 0.05,
-  },
-  content: {
-    flex: 1,
+  root: { flex: 1, backgroundColor: BOOKI.bg, overflow: 'hidden' },
+  bg: { flex: 1, width: '100%', overflow: 'hidden' },
+  bgImage: { opacity: 0.14 },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255,245,239,0.93)',
     justifyContent: 'space-between',
-  },
-  centerBlock: {
-    alignItems: 'center',
-  },
-  spaIcon: {
-    opacity: 0.65,
-    marginBottom: verticalScale(28),
-  },
-  logo: {
-    fontWeight: '800',
-    color: '#d5eee4',
-    letterSpacing: -2,
-    marginBottom: verticalScale(14),
-  },
-  taglineRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: moderateScale(10),
-    width: '100%',
-    justifyContent: 'center',
-  },
-  line: {
-    height: 1,
-    backgroundColor: 'rgba(217,229,227,0.35)',
-  },
-  tagline: {
-    color: '#d9e5e3',
-    fontSize: fontScale(11),
-    letterSpacing: 2.2,
-    textTransform: 'uppercase',
-    textAlign: 'center',
-  },
-  bottomArea: {
-    width: '100%',
-    alignItems: 'center',
-  },
-  estRow: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: verticalScale(22),
-    opacity: 0.75,
-  },
-  estText: {
-    color: '#c5d3d0',
-    fontSize: fontScale(9),
-    fontWeight: '600',
-    letterSpacing: 1.8,
-  },
-  estLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: 'rgba(240,252,250,0.25)',
-    marginHorizontal: moderateScale(10),
-  },
-  ctaButton: {
-    width: '100%',
-    borderRadius: 999,
+    paddingHorizontal: moderateScale(22),
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    elevation: 6,
   },
-  ctaPressed: {
-    transform: [{ scale: 0.98 }],
+  blobOrange: {
+    position: 'absolute',
+    top: verticalScale(28),
+    right: -moderateScale(40),
+    backgroundColor: BOOKI.orange,
+    opacity: 0.2,
+    transform: [{ scaleX: 1.08 }],
   },
-  ctaGradient: {
-    minHeight: clamp(verticalScale(56), 48, 60),
-    paddingHorizontal: moderateScale(20),
+  blobCharcoal: {
+    position: 'absolute',
+    bottom: verticalScale(120),
+    left: -moderateScale(52),
+    backgroundColor: BOOKI.charcoal,
+    opacity: 0.07,
+  },
+  sparkle: {
+    position: 'absolute',
+    top: '22%',
+    right: '10%',
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,107,53,0.25)',
+    opacity: 0.6,
+  },
+  topBadge: {
+    alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: moderateScale(8),
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.85)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,107,53,0.2)',
   },
-  ctaText: {
-    color: '#FFFFFF',
-    fontSize: fontScale(13),
-    fontWeight: '800',
-    letterSpacing: 1.4,
+  badgeText: {
+    fontSize: fontScale(11),
+    fontWeight: '700',
+    color: BOOKI.charcoal,
+    letterSpacing: 0.4,
     textTransform: 'uppercase',
   },
-  footerText: {
-    marginTop: verticalScale(18),
-    fontSize: fontScale(10),
-    color: 'rgba(192,201,195,0.5)',
-    letterSpacing: 1.8,
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: verticalScale(12),
   },
-  abstractTopBorder: {
-    position: 'absolute',
-    width: '70%',
-    height: '55%',
-    borderTopWidth: 1,
-    borderLeftWidth: 1,
-    borderColor: 'rgba(182,235,211,0.18)',
-    zIndex: 1,
+  headline: {
+    marginTop: verticalScale(20),
+    textAlign: 'center',
+    fontSize: fontScale(26),
+    fontWeight: '800',
+    color: BOOKI.charcoal,
+    lineHeight: fontScale(32),
+    letterSpacing: -0.6,
+    paddingHorizontal: 8,
   },
-  abstractGlow: {
-    position: 'absolute',
-    backgroundColor: 'rgba(2,93,71,0.24)',
-    zIndex: 1,
+  sub: {
+    marginTop: verticalScale(14),
+    textAlign: 'center',
+    fontSize: fontScale(14),
+    lineHeight: fontScale(21),
+    color: BOOKI.muted,
+    paddingHorizontal: moderateScale(8),
+    maxWidth: 340,
+  },
+  featureRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 10,
+    marginTop: verticalScale(22),
+    paddingHorizontal: 4,
+  },
+  featureChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderWidth: 1,
+    borderColor: 'rgba(44,44,44,0.06)',
+  },
+  featureText: {
+    fontSize: fontScale(12),
+    fontWeight: '600',
+    color: BOOKI.charcoal,
+  },
+  bottom: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  cta: {
+    width: '100%',
+    maxWidth: 400,
+    minHeight: 54,
+    borderRadius: 8,
+    backgroundColor: BOOKI.charcoal,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.14,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  ctaPressed: { opacity: 0.92, transform: [{ scale: 0.99 }] },
+  ctaText: {
+    color: BOOKI.white,
+    fontSize: fontScale(17),
+    fontWeight: '700',
+  },
+  secondaryBtn: {
+    marginTop: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  secondaryPressed: { opacity: 0.75 },
+  secondaryText: {
+    fontSize: fontScale(15),
+    fontWeight: '700',
+    color: BOOKI.orange,
+  },
+  hint: {
+    marginTop: verticalScale(4),
+    marginBottom: 0,
+    fontSize: fontScale(11),
+    color: BOOKI.muted,
+    letterSpacing: 0.4,
   },
 });

@@ -30,8 +30,8 @@ export default function ProfileScreen() {
 
   const recentBookings = useMemo(
     () => [
-      { id: '1', title: 'HydraFacial', meta: 'Oct 12 • Atelier Downtown', icon: 'face-6', tone: '#a6f2d4' },
-      { id: '2', title: 'Manicure', meta: 'Sep 28 • The Suite', icon: 'back-hand', tone: '#b6ebd3' },
+      { id: '1', title: 'HydraFacial', meta: 'Oct 12 • Atelier Downtown', icon: 'face-6', tone: '#FFA06A' },
+      { id: '2', title: 'Manicure', meta: 'Sep 28 • The Suite', icon: 'back-hand', tone: '#FFA06A' },
     ],
     []
   );
@@ -95,7 +95,7 @@ export default function ProfileScreen() {
           <Text style={styles.topBrand}>Emerald Pro</Text>
         </View>
         <Pressable onPress={() => setIsEditing((prev) => !prev)} style={styles.topActionBtn}>
-          <MaterialIcons name={isEditing ? 'close' : 'settings'} size={22} color="#404944" />
+          <MaterialIcons name={isEditing ? 'close' : 'settings'} size={22} color="#6B6B6B" />
         </Pressable>
       </View>
 
@@ -130,7 +130,7 @@ export default function ProfileScreen() {
               <Text style={styles.membershipTitle}>Emerald Tier</Text>
             </View>
             <View style={styles.vipPill}>
-              <MaterialIcons name="auto-awesome" size={14} color="#366855" />
+              <MaterialIcons name="auto-awesome" size={14} color="#FF6B2C" />
               <Text style={styles.vipText}>V.I.P</Text>
             </View>
           </View>
@@ -151,7 +151,7 @@ export default function ProfileScreen() {
             <Pressable key={item.id} style={[styles.bookingCard, index === 1 && styles.bookingCardOffset]}>
               <View style={styles.bookingLeft}>
                 <View style={[styles.bookingIconWrap, { backgroundColor: item.tone }]}>
-                  <MaterialIcons name={item.icon} size={20} color="#1c4f3e" />
+                  <MaterialIcons name={item.icon} size={20} color="#FF6B2C" />
                 </View>
                 <View>
                   <Text style={styles.bookingTitle}>{item.title}</Text>
@@ -175,7 +175,7 @@ export default function ProfileScreen() {
             ))}
             <Pressable style={styles.favCard}>
               <View style={styles.addFavCircle}>
-                <MaterialIcons name="add" size={22} color="#707974" />
+                <MaterialIcons name="add" size={22} color="#9E9E9E" />
               </View>
               <Text style={styles.addFavText}>Add New</Text>
             </Pressable>
@@ -190,7 +190,7 @@ export default function ProfileScreen() {
           ].map(([icon, label]) => (
             <Pressable key={label} style={styles.settingItem}>
               <View style={styles.settingLeft}>
-                <MaterialIcons name={icon} size={20} color="#366855" />
+                <MaterialIcons name={icon} size={20} color="#FF6B2C" />
                 <Text style={styles.settingText}>{label}</Text>
               </View>
               <MaterialIcons name="arrow-outward" size={18} color="#9aa6a1" />
@@ -205,7 +205,7 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#f0fcfa' },
+  safeArea: { flex: 1, backgroundColor: '#EDE0D4' },
   topBar: {
     height: 64,
     paddingHorizontal: 14,
@@ -217,59 +217,59 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(192,201,195,0.35)',
   },
   topLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  topAvatarWrap: { width: 34, height: 34, borderRadius: 17, overflow: 'hidden', borderWidth: 2, borderColor: '#b6ebd3' },
+  topAvatarWrap: { width: 34, height: 34, borderRadius: 17, overflow: 'hidden', borderWidth: 2, borderColor: '#FFA06A' },
   topAvatar: { width: '100%', height: '100%' },
-  topBrand: { color: '#313c3b', fontSize: fontScale(21), fontWeight: '800' },
+  topBrand: { color: '#1E1E1E', fontSize: fontScale(21), fontWeight: '800' },
   topActionBtn: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
   content: { padding: 14, paddingBottom: 30 },
   heroSection: { alignItems: 'center', marginBottom: 14 },
-  heroAvatarBorder: { width: 130, height: 130, borderRadius: 65, padding: 3, backgroundColor: '#366855' },
-  heroAvatar: { width: '100%', height: '100%', borderRadius: 63, borderWidth: 4, borderColor: '#f0fcfa' },
-  uploadChip: { marginTop: 8, borderRadius: 999, backgroundColor: '#366855', paddingHorizontal: 10, paddingVertical: 6, flexDirection: 'row', alignItems: 'center', gap: 4 },
+  heroAvatarBorder: { width: 130, height: 130, borderRadius: 65, padding: 3, backgroundColor: '#FF6B2C' },
+  heroAvatar: { width: '100%', height: '100%', borderRadius: 63, borderWidth: 4, borderColor: '#EDE0D4' },
+  uploadChip: { marginTop: 8, borderRadius: 999, backgroundColor: '#FF6B2C', paddingHorizontal: 10, paddingVertical: 6, flexDirection: 'row', alignItems: 'center', gap: 4 },
   uploadChipText: { color: '#FFFFFF', fontSize: fontScale(10), fontWeight: '700', textTransform: 'uppercase' },
-  heroName: { color: '#313c3b', fontSize: fontScale(34), fontWeight: '800', marginTop: 8 },
-  heroMeta: { color: '#5f6b66', fontSize: fontScale(13), fontWeight: '500' },
+  heroName: { color: '#1E1E1E', fontSize: fontScale(34), fontWeight: '800', marginTop: 8 },
+  heroMeta: { color: '#6B6B6B', fontSize: fontScale(13), fontWeight: '500' },
   editCard: { borderRadius: 20, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: 'rgba(192,201,195,0.35)', padding: 12, marginBottom: 12 },
-  editTitle: { color: '#313c3b', fontSize: fontScale(18), fontWeight: '700', marginBottom: 8 },
+  editTitle: { color: '#1E1E1E', fontSize: fontScale(18), fontWeight: '700', marginBottom: 8 },
   input: {
     minHeight: 44,
     borderRadius: 12,
     paddingHorizontal: 12,
     marginBottom: 8,
-    backgroundColor: '#eaf6f4',
-    color: '#131e1c',
+    backgroundColor: '#F5F5F5',
+    color: '#1E1E1E',
     fontSize: fontScale(13),
   },
-  membershipCard: { borderRadius: 30, padding: 16, backgroundColor: '#eaf6f4', marginBottom: 14 },
+  membershipCard: { borderRadius: 30, padding: 16, backgroundColor: '#F5F5F5', marginBottom: 14 },
   membershipHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 },
-  membershipKicker: { color: '#366855', fontSize: fontScale(10), fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.3 },
-  membershipTitle: { color: '#313c3b', fontSize: fontScale(25), fontWeight: '700' },
+  membershipKicker: { color: '#FF6B2C', fontSize: fontScale(10), fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.3 },
+  membershipTitle: { color: '#1E1E1E', fontSize: fontScale(25), fontWeight: '700' },
   vipPill: { borderRadius: 999, paddingHorizontal: 10, paddingVertical: 7, backgroundColor: 'rgba(182,235,211,0.4)', flexDirection: 'row', alignItems: 'center', gap: 4 },
-  vipText: { color: '#366855', fontSize: fontScale(11), fontWeight: '700' },
-  progressTrack: { height: 7, borderRadius: 999, backgroundColor: '#d9e5e3', overflow: 'hidden' },
-  progressFill: { width: '75%', height: '100%', backgroundColor: '#366855' },
-  membershipNote: { color: '#5f6b66', marginTop: 8, fontSize: fontScale(12) },
-  membershipStrong: { color: '#313c3b', fontWeight: '700' },
+  vipText: { color: '#FF6B2C', fontSize: fontScale(11), fontWeight: '700' },
+  progressTrack: { height: 7, borderRadius: 999, backgroundColor: '#DADADA', overflow: 'hidden' },
+  progressFill: { width: '75%', height: '100%', backgroundColor: '#FF6B2C' },
+  membershipNote: { color: '#6B6B6B', marginTop: 8, fontSize: fontScale(12) },
+  membershipStrong: { color: '#1E1E1E', fontWeight: '700' },
   section: { marginBottom: 14 },
   sectionHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  sectionTitle: { color: '#313c3b', fontSize: fontScale(22), fontWeight: '700' },
-  linkText: { color: '#366855', fontSize: fontScale(12), fontWeight: '700' },
+  sectionTitle: { color: '#1E1E1E', fontSize: fontScale(22), fontWeight: '700' },
+  linkText: { color: '#FF6B2C', fontSize: fontScale(12), fontWeight: '700' },
   bookingCard: { borderRadius: 24, backgroundColor: '#FFFFFF', padding: 14, marginBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   bookingCardOffset: { marginLeft: 14 },
   bookingLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   bookingIconWrap: { width: 42, height: 42, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  bookingTitle: { color: '#313c3b', fontSize: fontScale(14), fontWeight: '700' },
-  bookingMeta: { color: '#5f6b66', fontSize: fontScale(11), marginTop: 1 },
+  bookingTitle: { color: '#1E1E1E', fontSize: fontScale(14), fontWeight: '700' },
+  bookingMeta: { color: '#6B6B6B', fontSize: fontScale(11), marginTop: 1 },
   favRow: { gap: 10, paddingTop: 8, paddingBottom: 6 },
-  favCard: { width: 140, borderRadius: 30, padding: 12, backgroundColor: '#e4f0ee', alignItems: 'center' },
+  favCard: { width: 140, borderRadius: 30, padding: 12, backgroundColor: '#F5F5F5', alignItems: 'center' },
   favAvatar: { width: 76, height: 76, borderRadius: 38, marginBottom: 8 },
-  favName: { color: '#313c3b', fontSize: fontScale(14), fontWeight: '700' },
-  favRole: { color: '#5f6b66', fontSize: fontScale(10), textTransform: 'uppercase', letterSpacing: 1.1, marginTop: 2 },
-  addFavCircle: { width: 76, height: 76, borderRadius: 38, borderWidth: 2, borderStyle: 'dashed', borderColor: '#c0c9c3', alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
-  addFavText: { color: '#5f6b66', fontSize: fontScale(12) },
+  favName: { color: '#1E1E1E', fontSize: fontScale(14), fontWeight: '700' },
+  favRole: { color: '#6B6B6B', fontSize: fontScale(10), textTransform: 'uppercase', letterSpacing: 1.1, marginTop: 2 },
+  addFavCircle: { width: 76, height: 76, borderRadius: 38, borderWidth: 2, borderStyle: 'dashed', borderColor: '#DADADA', alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
+  addFavText: { color: '#6B6B6B', fontSize: fontScale(12) },
   settingsList: { gap: 6, marginBottom: 10 },
   settingItem: { borderRadius: 12, backgroundColor: 'rgba(228,240,238,0.5)', paddingHorizontal: 12, minHeight: 48, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   settingLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  settingText: { color: '#131e1c', fontSize: fontScale(14), fontWeight: '500' },
+  settingText: { color: '#1E1E1E', fontSize: fontScale(14), fontWeight: '500' },
   actionBtn: { marginTop: 6 },
 });

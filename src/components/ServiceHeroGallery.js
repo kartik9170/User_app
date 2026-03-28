@@ -21,7 +21,7 @@ export default function ServiceHeroGallery({ uris, variantLabel }) {
 
   if (n === 0) {
     return (
-      <View style={[heroStyles.heroWrap, { height: 220, backgroundColor: '#d9e5e3' }]}>
+      <View style={[heroStyles.heroWrap, { height: 220, backgroundColor: '#DADADA' }]}>
         {overlay}
       </View>
     );
@@ -81,7 +81,7 @@ export default function ServiceHeroGallery({ uris, variantLabel }) {
               <Image source={{ uri: uris[3] }} style={heroStyles.thumbBottom} />
               {extra && (
                 <Pressable style={heroStyles.viewAll} onPress={() => setModalOpen(true)}>
-                  <MaterialIcons name="grid-view" size={16} color="#131e1c" />
+                  <MaterialIcons name="grid-view" size={16} color="#1E1E1E" />
                   <Text style={heroStyles.viewAllText}>View all {n}</Text>
                 </Pressable>
               )}
@@ -97,7 +97,7 @@ export default function ServiceHeroGallery({ uris, variantLabel }) {
             <View style={heroStyles.modalHeader}>
               <Text style={heroStyles.modalTitle}>Photos</Text>
               <Pressable onPress={() => setModalOpen(false)} hitSlop={12}>
-                <MaterialIcons name="close" size={24} color="#131e1c" />
+                <MaterialIcons name="close" size={24} color="#1E1E1E" />
               </Pressable>
             </View>
             <ScrollView contentContainerStyle={heroStyles.modalGrid}>
@@ -114,10 +114,10 @@ export default function ServiceHeroGallery({ uris, variantLabel }) {
 
 const heroStyles = StyleSheet.create({
   heroWrap: { position: 'relative', overflow: 'hidden' },
-  heroImage: { width: '100%', height: '100%', backgroundColor: '#d9e5e3' },
+  heroImage: { width: '100%', height: '100%', backgroundColor: '#DADADA' },
   heroGrad: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(19,30,28,0.12)',
+    backgroundColor: 'rgba(30,30,30,0.12)',
   },
   heroPill: {
     position: 'absolute',
@@ -128,18 +128,18 @@ const heroStyles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 999,
   },
-  heroPillText: { color: '#366855', fontSize: fontScale(10), fontWeight: '800' },
+  heroPillText: { color: '#FF6B2C', fontSize: fontScale(10), fontWeight: '800' },
   row: { flexDirection: 'row', alignItems: 'stretch' },
-  half: { flex: 1, height: 220, borderRadius: R, backgroundColor: '#d9e5e3' },
-  leftTall: { width: '56%', height: 230, borderRadius: R, backgroundColor: '#d9e5e3' },
+  half: { flex: 1, height: 220, borderRadius: R, backgroundColor: '#DADADA' },
+  leftTall: { width: '56%', height: 230, borderRadius: R, backgroundColor: '#DADADA' },
   rightStack: { flex: 1, justifyContent: 'space-between' },
-  smallSq: { width: '100%', height: 111, borderRadius: R, backgroundColor: '#d9e5e3' },
+  smallSq: { width: '100%', height: 111, borderRadius: R, backgroundColor: '#DADADA' },
   featureCol: { width: '52%' },
-  featureImg: { width: '100%', height: 240, borderRadius: R, backgroundColor: '#d9e5e3' },
+  featureImg: { width: '100%', height: 240, borderRadius: R, backgroundColor: '#DADADA' },
   thumbCol: { flex: 1 },
-  thumbTop: { flex: 1, height: 115, borderRadius: R, backgroundColor: '#d9e5e3' },
+  thumbTop: { flex: 1, height: 115, borderRadius: R, backgroundColor: '#DADADA' },
   bottomSlot: { position: 'relative' },
-  thumbBottom: { width: '100%', height: 115, borderRadius: R, backgroundColor: '#d9e5e3' },
+  thumbBottom: { width: '100%', height: 115, borderRadius: R, backgroundColor: '#DADADA' },
   viewAll: {
     position: 'absolute',
     right: 8,
@@ -151,7 +151,7 @@ const heroStyles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 999,
   },
-  viewAllText: { marginLeft: 6, color: '#131e1c', fontSize: fontScale(11), fontWeight: '800' },
+  viewAllText: { marginLeft: 6, color: '#1E1E1E', fontSize: fontScale(11), fontWeight: '800' },
   modalBackdrop: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -173,7 +173,7 @@ const heroStyles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'rgba(0,0,0,0.08)',
   },
-  modalTitle: { fontSize: fontScale(16), fontWeight: '800', color: '#131e1c' },
+  modalTitle: { fontSize: fontScale(16), fontWeight: '800', color: '#1E1E1E' },
   modalGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 8, paddingTop: 8 },
   modalThumb: {
     width: '47%',
@@ -181,6 +181,6 @@ const heroStyles = StyleSheet.create({
     marginBottom: 10,
     aspectRatio: 1,
     borderRadius: R,
-    backgroundColor: '#d9e5e3',
+    backgroundColor: '#DADADA',
   },
 });

@@ -17,7 +17,7 @@ export default function TrackingScreen({ navigation }) {
         <View style={styles.topLeft}>
           <Text style={styles.brand}>The Atelier</Text>
         </View>
-        <MaterialIcons name="more-vert" size={22} color="#404944" />
+        <MaterialIcons name="more-vert" size={22} color="#6B6B6B" />
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -60,7 +60,7 @@ export default function TrackingScreen({ navigation }) {
                   </View>
                 </View>
                 <View style={styles.calendarBtn}>
-                  <MaterialIcons name="calendar-today" size={18} color="#366855" />
+                  <MaterialIcons name="calendar-today" size={18} color="#FF6B2C" />
                 </View>
               </View>
             </Pressable>
@@ -93,7 +93,7 @@ export default function TrackingScreen({ navigation }) {
               {index === 0 ? (
                 <View style={styles.starsRow}>
                   {[1, 2, 3, 4, 5].map((star) => (
-                    <MaterialIcons key={star} name="star" size={14} color="#366855" />
+                    <MaterialIcons key={star} name="star" size={14} color="#FF6B2C" />
                   ))}
                 </View>
               ) : (
@@ -110,17 +110,17 @@ export default function TrackingScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#f0fcfa' },
+  safeArea: { flex: 1, backgroundColor: '#EDE0D4' },
   topBar: { height: 62, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   topLeft: { flexDirection: 'row', alignItems: 'center' },
-  brand: { color: '#313c3b', fontSize: fontScale(22), fontWeight: '800', letterSpacing: 1 },
+  brand: { color: '#1E1E1E', fontSize: fontScale(22), fontWeight: '800', letterSpacing: 1 },
   content: { paddingHorizontal: 14, paddingBottom: 20 },
-  heroTitle: { color: '#131e1c', fontSize: fontScale(36), fontWeight: '800' },
-  heroSub: { color: '#5f6b66', fontSize: fontScale(13), marginTop: 2, marginBottom: 10 },
+  heroTitle: { color: '#1E1E1E', fontSize: fontScale(36), fontWeight: '800' },
+  heroSub: { color: '#6B6B6B', fontSize: fontScale(13), marginTop: 2, marginBottom: 10 },
   filterRow: { flexDirection: 'row', gap: 8, marginBottom: 12 },
-  filterPill: { borderRadius: 999, backgroundColor: '#e4f0ee', paddingHorizontal: 12, paddingVertical: 8 },
-  filterPillActive: { backgroundColor: '#366855' },
-  filterPillText: { color: '#5f6b66', fontSize: fontScale(12), fontWeight: '600' },
+  filterPill: { borderRadius: 999, backgroundColor: '#F5F5F5', paddingHorizontal: 12, paddingVertical: 8 },
+  filterPillActive: { backgroundColor: '#FF6B2C' },
+  filterPillText: { color: '#6B6B6B', fontSize: fontScale(12), fontWeight: '600' },
   filterPillTextActive: { color: '#FFFFFF', fontSize: fontScale(12), fontWeight: '700' },
   sectionLabel: { color: '#3a6c59', fontSize: fontScale(10), fontWeight: '700', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 8 },
   sectionLabelPast: { color: 'rgba(64,73,68,0.6)', fontSize: fontScale(10), fontWeight: '700', textTransform: 'uppercase', letterSpacing: 2, marginTop: 16, marginBottom: 8 },
@@ -129,33 +129,33 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     padding: 14,
     marginBottom: 10,
-    shadowColor: '#131e1c',
+    shadowColor: '#1E1E1E',
     shadowOpacity: 0.06,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 6 },
     elevation: 4,
   },
   badge: { alignSelf: 'flex-end', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5, backgroundColor: 'rgba(182,235,211,0.45)' },
-  badgeText: { color: '#1c4f3e', fontSize: fontScale(10), fontWeight: '700', textTransform: 'uppercase' },
-  cardKicker: { color: '#366855', fontSize: fontScale(10), fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.6, marginTop: 2 },
-  cardTitle: { color: '#131e1c', fontSize: fontScale(24), fontWeight: '800', marginTop: 2 },
+  badgeText: { color: '#FF6B2C', fontSize: fontScale(10), fontWeight: '700', textTransform: 'uppercase' },
+  cardKicker: { color: '#FF6B2C', fontSize: fontScale(10), fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.6, marginTop: 2 },
+  cardTitle: { color: '#1E1E1E', fontSize: fontScale(24), fontWeight: '800', marginTop: 2 },
   metaRow: { marginTop: 10, flexDirection: 'row', gap: 26 },
   metaLabel: { color: '#7a8681', fontSize: fontScale(10), fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.2 },
-  metaValue: { color: '#313c3b', fontSize: fontScale(13), fontWeight: '700', marginTop: 1 },
-  bottomRow: { marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderColor: '#e4f0ee', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  metaValue: { color: '#1E1E1E', fontSize: fontScale(13), fontWeight: '700', marginTop: 1 },
+  bottomRow: { marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderColor: '#F5F5F5', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   artistRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   artistAvatar: { width: 42, height: 42, borderRadius: 21 },
-  artistName: { color: '#131e1c', fontSize: fontScale(13), fontWeight: '700' },
-  calendarBtn: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: '#eaf6f4' },
-  emptyWrap: { borderRadius: 14, backgroundColor: '#eaf6f4', padding: 14 },
-  emptyText: { color: '#5f6b66', textAlign: 'center' },
+  artistName: { color: '#1E1E1E', fontSize: fontScale(13), fontWeight: '700' },
+  calendarBtn: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5F5F5' },
+  emptyWrap: { borderRadius: 14, backgroundColor: '#F5F5F5', padding: 14 },
+  emptyText: { color: '#6B6B6B', textAlign: 'center' },
   pastCard: { borderRadius: 18, backgroundColor: 'rgba(228,240,238,0.45)', padding: 10, marginBottom: 8, flexDirection: 'row', gap: 10 },
   pastImage: { width: 62, height: 62, borderRadius: 12 },
   pastBody: { flex: 1 },
   pastHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  pastTitle: { color: '#131e1c', fontSize: fontScale(14), fontWeight: '700', flex: 1, marginRight: 6 },
+  pastTitle: { color: '#1E1E1E', fontSize: fontScale(14), fontWeight: '700', flex: 1, marginRight: 6 },
   pastStatus: { color: 'rgba(64,73,68,0.6)', fontSize: fontScale(9), fontWeight: '700', textTransform: 'uppercase' },
   pastSub: { color: '#6d7873', fontSize: fontScale(11), marginTop: 2 },
   starsRow: { flexDirection: 'row', gap: 1, marginTop: 5 },
-  rebookText: { marginTop: 6, color: '#366855', fontSize: fontScale(10), fontWeight: '700', textTransform: 'uppercase', textDecorationLine: 'underline' },
+  rebookText: { marginTop: 6, color: '#FF6B2C', fontSize: fontScale(10), fontWeight: '700', textTransform: 'uppercase', textDecorationLine: 'underline' },
 });

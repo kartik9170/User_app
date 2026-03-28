@@ -13,7 +13,7 @@ export default function ReviewScreen({ navigation }) {
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} style={styles.iconBtn}>
-          <MaterialIcons name="arrow-back" size={22} color="#366855" />
+          <MaterialIcons name="arrow-back" size={22} color="#FF6B2C" />
         </Pressable>
         <Text style={styles.headerTitle}>Rate Service</Text>
         <View style={styles.headerSpacer} />
@@ -46,7 +46,7 @@ export default function ReviewScreen({ navigation }) {
         <View style={styles.starRow}>
           {[1, 2, 3, 4, 5].map((star) => (
             <Pressable key={star} onPress={() => setRating(star)}>
-              <MaterialIcons name={star <= rating ? 'star' : 'star-border'} size={34} color="#366855" />
+              <MaterialIcons name={star <= rating ? 'star' : 'star-border'} size={34} color="#FF6B2C" />
             </Pressable>
           ))}
         </View>
@@ -68,7 +68,7 @@ export default function ReviewScreen({ navigation }) {
         </View>
         <View style={styles.photoGrid}>
           <View style={styles.photoUpload}>
-            <MaterialIcons name="add-a-photo" size={28} color="#366855" />
+            <MaterialIcons name="add-a-photo" size={28} color="#FF6B2C" />
             <Text style={styles.photoUploadText}>Upload New</Text>
           </View>
           <View style={styles.photoPreviewCol}>
@@ -79,7 +79,7 @@ export default function ReviewScreen({ navigation }) {
               </View>
             </View>
             <View style={styles.photoAddMini}>
-              <MaterialIcons name="add" size={20} color="#707974" />
+              <MaterialIcons name="add" size={20} color="#9E9E9E" />
             </View>
           </View>
         </View>
@@ -99,48 +99,48 @@ export default function ReviewScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#f0fcfa' },
+  safeArea: { flex: 1, backgroundColor: '#EDE0D4' },
   header: { height: 62, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   iconBtn: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { color: '#131e1c', fontSize: fontScale(18), fontWeight: '700' },
+  headerTitle: { color: '#1E1E1E', fontSize: fontScale(18), fontWeight: '700' },
   headerSpacer: { width: 34 },
   content: { paddingHorizontal: 14, paddingBottom: 20 },
   artistCard: { borderRadius: 16, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: 'rgba(192,201,195,0.35)', padding: 12, marginBottom: 12 },
   artistTop: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
   avatarWrap: { position: 'relative' },
   avatar: { width: 60, height: 60, borderRadius: 30 },
-  verified: { position: 'absolute', right: -1, bottom: -1, width: 20, height: 20, borderRadius: 10, backgroundColor: '#025d47', alignItems: 'center', justifyContent: 'center' },
+  verified: { position: 'absolute', right: -1, bottom: -1, width: 20, height: 20, borderRadius: 10, backgroundColor: '#2C2C2C', alignItems: 'center', justifyContent: 'center' },
   artistLabel: { color: 'rgba(64,73,68,0.65)', fontSize: fontScale(10), textTransform: 'uppercase', fontWeight: '700' },
-  artistName: { color: '#313c3b', fontSize: fontScale(20), fontWeight: '800', marginTop: 2 },
-  serviceBox: { borderRadius: 12, backgroundColor: '#eaf6f4', padding: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  serviceName: { color: '#131e1c', fontSize: fontScale(14), fontWeight: '700' },
-  serviceMeta: { color: '#5f6b66', fontSize: fontScale(11), marginTop: 1 },
+  artistName: { color: '#1E1E1E', fontSize: fontScale(20), fontWeight: '800', marginTop: 2 },
+  serviceBox: { borderRadius: 12, backgroundColor: '#F5F5F5', padding: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  serviceName: { color: '#1E1E1E', fontSize: fontScale(14), fontWeight: '700' },
+  serviceMeta: { color: '#6B6B6B', fontSize: fontScale(11), marginTop: 1 },
   donePill: { backgroundColor: 'rgba(182,235,211,0.45)', color: '#3a6c59', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 4, fontSize: fontScale(10), fontWeight: '700', textTransform: 'uppercase' },
-  ratingTitle: { color: '#313c3b', textAlign: 'center', fontSize: fontScale(18), fontWeight: '700', marginBottom: 8 },
+  ratingTitle: { color: '#1E1E1E', textAlign: 'center', fontSize: fontScale(18), fontWeight: '700', marginBottom: 8 },
   starRow: { flexDirection: 'row', justifyContent: 'center', gap: 6 },
-  quote: { textAlign: 'center', color: '#5f6b66', marginTop: 4, marginBottom: 10, fontStyle: 'italic' },
-  feedbackLabel: { color: '#313c3b', fontSize: fontScale(13), fontWeight: '700', marginBottom: 6 },
+  quote: { textAlign: 'center', color: '#6B6B6B', marginTop: 4, marginBottom: 10, fontStyle: 'italic' },
+  feedbackLabel: { color: '#1E1E1E', fontSize: fontScale(13), fontWeight: '700', marginBottom: 6 },
   feedbackInput: {
     borderRadius: 14,
     minHeight: 120,
     padding: 12,
     textAlignVertical: 'top',
-    backgroundColor: '#deebe8',
-    color: '#131e1c',
+    backgroundColor: '#F5F5F5',
+    color: '#1E1E1E',
     marginBottom: 10,
   },
   photoHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 8 },
-  photoTitle: { color: '#313c3b', fontSize: fontScale(16), fontWeight: '700' },
+  photoTitle: { color: '#1E1E1E', fontSize: fontScale(16), fontWeight: '700' },
   photoSub: { color: '#7a8681', fontSize: fontScale(11) },
   photoGrid: { flexDirection: 'row', gap: 8, marginBottom: 12 },
-  photoUpload: { flex: 1.2, borderRadius: 14, minHeight: 140, borderWidth: 2, borderStyle: 'dashed', borderColor: '#c0c9c3', backgroundColor: '#eaf6f4', alignItems: 'center', justifyContent: 'center' },
-  photoUploadText: { color: '#1c4f3e', fontSize: fontScale(11), fontWeight: '600', marginTop: 4 },
+  photoUpload: { flex: 1.2, borderRadius: 14, minHeight: 140, borderWidth: 2, borderStyle: 'dashed', borderColor: '#DADADA', backgroundColor: '#F5F5F5', alignItems: 'center', justifyContent: 'center' },
+  photoUploadText: { color: '#FF6B2C', fontSize: fontScale(11), fontWeight: '600', marginTop: 4 },
   photoPreviewCol: { flex: 0.8, gap: 8 },
   previewPhotoWrap: { flex: 1, borderRadius: 12, overflow: 'hidden', position: 'relative' },
   previewPhoto: { width: '100%', height: '100%' },
-  closePhoto: { position: 'absolute', top: 4, right: 4, width: 18, height: 18, borderRadius: 9, backgroundColor: 'rgba(19,30,28,0.6)', alignItems: 'center', justifyContent: 'center' },
-  photoAddMini: { flex: 1, borderRadius: 12, borderWidth: 2, borderStyle: 'dashed', borderColor: '#c0c9c3', backgroundColor: '#eaf6f4', alignItems: 'center', justifyContent: 'center' },
+  closePhoto: { position: 'absolute', top: 4, right: 4, width: 18, height: 18, borderRadius: 9, backgroundColor: 'rgba(30,30,30,0.6)', alignItems: 'center', justifyContent: 'center' },
+  photoAddMini: { flex: 1, borderRadius: 12, borderWidth: 2, borderStyle: 'dashed', borderColor: '#DADADA', backgroundColor: '#F5F5F5', alignItems: 'center', justifyContent: 'center' },
   submitBtn: { marginTop: 4 },
   skipBtn: { alignSelf: 'center', marginTop: 10, paddingVertical: 6 },
-  skipText: { color: '#1c4f3e', opacity: 0.7, textDecorationLine: 'underline' },
+  skipText: { color: '#FF6B2C', opacity: 0.7, textDecorationLine: 'underline' },
 });

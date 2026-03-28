@@ -24,7 +24,7 @@ export default function LiveTrackingScreen({ navigation, route }) {
       <View style={styles.topBar}>
         <View style={styles.topLeft}>
           <Pressable onPress={() => navigation.goBack()} style={styles.iconBtn}>
-            <MaterialIcons name="arrow-back" size={22} color="#366855" />
+            <MaterialIcons name="arrow-back" size={22} color="#FF6B2C" />
           </Pressable>
           <Text style={styles.title}>Atelier Beauty</Text>
         </View>
@@ -54,7 +54,7 @@ export default function LiveTrackingScreen({ navigation, route }) {
             ['panorama-fish-eye', 'Arrived', 'Expected arrival: 11:15 AM', false],
           ].map(([icon, label, meta, completed], index) => (
             <View key={label} style={styles.timelineRow}>
-              <MaterialIcons name={icon} size={20} color={completed || index === 2 ? '#366855' : '#9aa6a1'} />
+              <MaterialIcons name={icon} size={20} color={completed || index === 2 ? '#FF6B2C' : '#9aa6a1'} />
               <View style={styles.timelineTextWrap}>
                 <Text style={[styles.timelineLabel, !completed && index === 3 && styles.timelineLabelMuted]}>{label}</Text>
                 <Text style={[styles.timelineMeta, index === 2 && styles.timelineMetaActive]}>{meta}</Text>
@@ -96,40 +96,40 @@ function ButtonBlock({ label, onPress }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#f0fcfa' },
+  safeArea: { flex: 1, backgroundColor: '#EDE0D4' },
   topBar: { height: 62, paddingHorizontal: 14, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   topLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   iconBtn: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
-  title: { color: '#313c3b', fontSize: fontScale(18), fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1 },
+  title: { color: '#1E1E1E', fontSize: fontScale(18), fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1 },
   avatar: { width: 36, height: 36, borderRadius: 18 },
   content: { paddingHorizontal: 14, paddingBottom: 20 },
-  heading: { color: '#313c3b', fontSize: fontScale(30), fontWeight: '800' },
-  subheading: { color: '#5f6b66', fontSize: fontScale(12), marginTop: 2, marginBottom: 10 },
-  mapCard: { height: 230, borderRadius: 16, overflow: 'hidden', position: 'relative', backgroundColor: '#deebe8' },
+  heading: { color: '#1E1E1E', fontSize: fontScale(30), fontWeight: '800' },
+  subheading: { color: '#6B6B6B', fontSize: fontScale(12), marginTop: 2, marginBottom: 10 },
+  mapCard: { height: 230, borderRadius: 16, overflow: 'hidden', position: 'relative', backgroundColor: '#F5F5F5' },
   mapImage: { width: '100%', height: '100%', opacity: 0.45 },
   mapOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(240,252,250,0.2)' },
   centerPin: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
-  pinCircle: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', backgroundColor: '#366855' },
+  pinCircle: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FF6B2C' },
   timelineCard: { marginTop: 12, borderRadius: 16, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: 'rgba(192,201,195,0.35)', padding: 12 },
-  timelineTitle: { color: '#313c3b', fontSize: fontScale(17), fontWeight: '700', marginBottom: 8 },
+  timelineTitle: { color: '#1E1E1E', fontSize: fontScale(17), fontWeight: '700', marginBottom: 8 },
   timelineRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 9 },
   timelineTextWrap: { flex: 1 },
-  timelineLabel: { color: '#313c3b', fontSize: fontScale(14), fontWeight: '700' },
+  timelineLabel: { color: '#1E1E1E', fontSize: fontScale(14), fontWeight: '700' },
   timelineLabelMuted: { color: 'rgba(64,73,68,0.6)' },
   timelineMeta: { color: '#6d7873', fontSize: fontScale(11), marginTop: 1 },
-  timelineMetaActive: { color: '#1c4f3e', fontWeight: '600' },
-  artisanCard: { marginTop: 12, borderRadius: 14, backgroundColor: '#eaf6f4', padding: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  timelineMetaActive: { color: '#FF6B2C', fontWeight: '600' },
+  artisanCard: { marginTop: 12, borderRadius: 14, backgroundColor: '#F5F5F5', padding: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   artisanLeft: { flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1, marginRight: 8 },
   artisanAvatar: { width: 52, height: 52, borderRadius: 26 },
-  artisanName: { color: '#313c3b', fontSize: fontScale(15), fontWeight: '700' },
+  artisanName: { color: '#1E1E1E', fontSize: fontScale(15), fontWeight: '700' },
   ratingRow: { flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 2 },
-  ratingText: { color: '#5f6b66', fontSize: fontScale(11), fontWeight: '600' },
-  callBtn: { borderRadius: 999, backgroundColor: '#366855', flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 8 },
+  ratingText: { color: '#6B6B6B', fontSize: fontScale(11), fontWeight: '600' },
+  callBtn: { borderRadius: 999, backgroundColor: '#FF6B2C', flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 8 },
   callBtnText: { color: '#FFFFFF', fontSize: fontScale(11), fontWeight: '700' },
   rateBtn: {
     marginTop: 12,
     borderRadius: 14,
-    backgroundColor: '#366855',
+    backgroundColor: '#FF6B2C',
     minHeight: 50,
     alignItems: 'center',
     justifyContent: 'center',

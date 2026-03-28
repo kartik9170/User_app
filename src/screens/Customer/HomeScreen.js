@@ -67,12 +67,12 @@ export default function HomeScreen({ navigation }) {
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.topBar}>
         <View style={styles.brandRow}>
-          <MaterialIcons name="spa" size={22} color="#313c3b" />
+          <MaterialIcons name="spa" size={22} color="#1E1E1E" />
           <Text style={styles.brand}>The Atelier</Text>
         </View>
         <View style={styles.actions}>
           <Pressable style={styles.iconBtn}>
-            <MaterialIcons name="notifications" size={20} color="#5f6b66" />
+            <MaterialIcons name="notifications" size={20} color="#6B6B6B" />
           </Pressable>
           <View style={styles.avatar}>
             <Image
@@ -128,7 +128,7 @@ export default function HomeScreen({ navigation }) {
               }
             >
               <View style={styles.categoryIconWrap}>
-                <MaterialIcons name={ch.iconKey || 'spa'} size={26} color="#366855" />
+                <MaterialIcons name={ch.iconKey || 'spa'} size={26} color="#FF6B2C" />
               </View>
               <Text style={styles.categoryText}>{ch.title}</Text>
             </Pressable>
@@ -196,7 +196,7 @@ export default function HomeScreen({ navigation }) {
                   <Text style={styles.quickSub}>{item.duration}</Text>
                   <View style={styles.quickFooter}>
                     <Text style={styles.quickPrice}>INR {item.price}</Text>
-                    <MaterialIcons name="add-circle" size={20} color="#366855" />
+                    <MaterialIcons name="add-circle" size={20} color="#FF6B2C" />
                   </View>
                 </Pressable>
               ))}
@@ -209,7 +209,7 @@ export default function HomeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#f0fcfa' },
+  safeArea: { flex: 1, backgroundColor: '#EDE0D4' },
   topBar: {
     height: 62,
     paddingHorizontal: 14,
@@ -221,15 +221,15 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(192,201,195,0.35)',
   },
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  brand: { color: '#313c3b', fontSize: fontScale(21), fontWeight: '800' },
+  brand: { color: '#1E1E1E', fontSize: fontScale(21), fontWeight: '800' },
   actions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   iconBtn: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
-  avatar: { width: 32, height: 32, borderRadius: 16, overflow: 'hidden', backgroundColor: '#d9e5e3' },
+  avatar: { width: 32, height: 32, borderRadius: 16, overflow: 'hidden', backgroundColor: '#DADADA' },
   avatarImg: { width: '100%', height: '100%' },
   content: { padding: 14, paddingBottom: 24 },
   heroBlock: { marginBottom: 10 },
-  heroTitle: { color: '#313c3b', fontSize: fontScale(30), fontWeight: '900', lineHeight: fontScale(35), marginBottom: 3 },
-  heroSub: { color: '#5f6b66', fontSize: fontScale(14) },
+  heroTitle: { color: '#1E1E1E', fontSize: fontScale(30), fontWeight: '900', lineHeight: fontScale(35), marginBottom: 3 },
+  heroSub: { color: '#6B6B6B', fontSize: fontScale(14) },
   warnBox: {
     backgroundColor: '#fdecea',
     borderRadius: 10,
@@ -239,18 +239,18 @@ const styles = StyleSheet.create({
   warnText: { color: '#8a2f2f', fontSize: fontScale(12) },
   searchWrap: {
     borderRadius: 14,
-    backgroundColor: '#deebe8',
+    backgroundColor: '#F5F5F5',
     minHeight: 54,
     paddingHorizontal: 12,
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 12,
   },
-  searchInput: { flex: 1, marginLeft: 8, color: '#313c3b', fontSize: fontScale(14) },
-  searchBtn: { borderRadius: 10, backgroundColor: '#366855', paddingHorizontal: 12, paddingVertical: 8 },
+  searchInput: { flex: 1, marginLeft: 8, color: '#1E1E1E', fontSize: fontScale(14) },
+  searchBtn: { borderRadius: 10, backgroundColor: '#FF6B2C', paddingHorizontal: 12, paddingVertical: 8 },
   searchBtnText: { color: '#FFFFFF', fontSize: fontScale(11), fontWeight: '700' },
   sectionHead: { marginTop: 4, marginBottom: 8 },
-  sectionTitle: { color: '#313c3b', fontSize: fontScale(22), fontWeight: '800' },
+  sectionTitle: { color: '#1E1E1E', fontSize: fontScale(22), fontWeight: '800' },
   categoriesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
   categoryCard: {
     width: '31.8%',
@@ -265,15 +265,15 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#eaf6f4',
+    backgroundColor: '#F5F5F5',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 6,
   },
-  categoryText: { color: '#313c3b', fontSize: fontScale(12), fontWeight: '700' },
+  categoryText: { color: '#1E1E1E', fontSize: fontScale(12), fontWeight: '700' },
   banner: { borderRadius: 24, overflow: 'hidden', minHeight: 190, marginBottom: 12 },
   bannerImage: { ...StyleSheet.absoluteFillObject, width: undefined, height: undefined },
-  bannerOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(19,30,28,0.38)' },
+  bannerOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(30,30,30,0.38)' },
   bannerContent: { padding: 16, marginTop: 'auto' },
   bannerPill: {
     alignSelf: 'flex-start',
@@ -296,18 +296,18 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginBottom: 10,
   },
-  featureImage: { width: '100%', height: 160, backgroundColor: '#d9e5e3' },
+  featureImage: { width: '100%', height: 160, backgroundColor: '#DADADA' },
   featureBody: { padding: 12 },
   featureTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  featureName: { color: '#313c3b', fontSize: fontScale(16), fontWeight: '700', flex: 1, marginRight: 8 },
-  featurePrice: { color: '#366855', fontSize: fontScale(14), fontWeight: '800' },
-  featureDesc: { color: '#5f6b66', fontSize: fontScale(12), marginTop: 4 },
+  featureName: { color: '#1E1E1E', fontSize: fontScale(16), fontWeight: '700', flex: 1, marginRight: 8 },
+  featurePrice: { color: '#FF6B2C', fontSize: fontScale(14), fontWeight: '800' },
+  featureDesc: { color: '#6B6B6B', fontSize: fontScale(12), marginTop: 4 },
   featureMeta: { color: '#6d7873', fontSize: fontScale(11), marginTop: 6, fontWeight: '600' },
   quickRow: { gap: 10, paddingBottom: 8 },
-  quickCard: { width: 220, borderRadius: 16, backgroundColor: '#eaf6f4', padding: 10 },
-  quickImage: { width: '100%', height: 120, borderRadius: 12, marginBottom: 8, backgroundColor: '#d9e5e3' },
-  quickName: { color: '#313c3b', fontSize: fontScale(14), fontWeight: '700' },
+  quickCard: { width: 220, borderRadius: 16, backgroundColor: '#F5F5F5', padding: 10 },
+  quickImage: { width: '100%', height: 120, borderRadius: 12, marginBottom: 8, backgroundColor: '#DADADA' },
+  quickName: { color: '#1E1E1E', fontSize: fontScale(14), fontWeight: '700' },
   quickSub: { color: '#6d7873', fontSize: fontScale(11), marginTop: 2 },
   quickFooter: { marginTop: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  quickPrice: { color: '#366855', fontSize: fontScale(13), fontWeight: '800' },
+  quickPrice: { color: '#FF6B2C', fontSize: fontScale(13), fontWeight: '800' },
 });

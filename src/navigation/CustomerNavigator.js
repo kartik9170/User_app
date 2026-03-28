@@ -55,7 +55,7 @@ export default function CustomerNavigator() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: '#1c4f3e',
+        tabBarActiveTintColor: '#FF6B2C',
         tabBarInactiveTintColor: '#7a8681',
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600', marginBottom: 2 },
         tabBarStyle: {
