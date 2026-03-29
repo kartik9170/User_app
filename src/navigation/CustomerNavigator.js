@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -60,10 +61,20 @@ export default function CustomerNavigator() {
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600', marginBottom: 2 },
         tabBarStyle: {
           height: 64,
-          paddingTop: 6,
-          paddingBottom: 8,
-          backgroundColor: 'rgba(240,252,250,0.95)',
-          borderTopColor: 'rgba(192,201,195,0.35)',
+          paddingTop: 8,
+          paddingBottom: Platform.OS === 'ios' ? 10 : 8,
+          backgroundColor: '#FFFFFF',
+          borderTopWidth: 0,
+          borderTopLeftRadius: 28,
+          borderTopRightRadius: 28,
+          marginHorizontal: 14,
+          marginBottom: Platform.OS === 'ios' ? 10 : 8,
+          overflow: 'hidden',
+          elevation: 16,
+          shadowColor: '#2A2118',
+          shadowOffset: { width: 0, height: -3 },
+          shadowOpacity: 0.12,
+          shadowRadius: 14,
         },
         tabBarIcon: ({ color, focused, size }) => (
           <MaterialIcons

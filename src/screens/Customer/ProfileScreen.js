@@ -1,60 +1,61 @@
-import React, { useMemo, useState } from 'react';
-import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Button from '../../components/Button';
 import useAuth from '../../hooks/useAuth';
+import { API_URL } from '../../config/config';
 import { fontScale } from '../../utils/responsive';
 
-const DEFAULT_PROFILE_NAME = 'Sophia Chen';
+/** Server returns `/uploads/...`; local picks use `file://`; build a single display URI. */
+function avatarDisplayUri(avatar) {
+  if (avatar == null || !String(avatar).trim()) return null;
+  const s = String(avatar).trim();
+  if (s.startsWith('file:') || s.startsWith('http://') || s.startsWith('https://')) return s;
+  const path = s.startsWith('/') ? s : `/${s}`;
+  return `${API_URL}${path}`;
+}
+
+const DEFAULT_PROFILE_NAME = 'Member';
 
 export default function ProfileScreen() {
-  const { user, logout, updateUserProfile } = useAuth();
+  const { user, token, logout, updateUserProfile } = useAuth();
   const sanitizedName = (() => {
     const raw = String(user?.name || '').trim();
     if (!raw) return DEFAULT_PROFILE_NAME;
-    // If backend returns mobile-like values, keep a proper display name.
     if (/^[0-9+\-\s()]+$/.test(raw)) return DEFAULT_PROFILE_NAME;
     return raw;
   })();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(sanitizedName);
-  const [email, setEmail] = useState(user?.email || 'sophia.chen@atelier.com');
-  const [city, setCity] = useState(user?.city || 'Bangalore');
-  const [memberSince, setMemberSince] = useState(user?.memberSince || '2024');
-  const [profileImage, setProfileImage] = useState(
-    user?.avatar ||
-      'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=500&q=80'
-  );
+  const [email, setEmail] = useState(user?.email || '');
+  const [city, setCity] = useState(user?.city || '');
+  const [memberSince, setMemberSince] = useState(user?.memberSince || String(new Date().getFullYear()));
+  /** No default stock photo — new users see a placeholder until they upload. */
+  const [profileImage, setProfileImage] = useState(() => avatarDisplayUri(user?.avatar));
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
-  const recentBookings = useMemo(
-    () => [
-      { id: '1', title: 'HydraFacial', meta: 'Oct 12 • Atelier Downtown', icon: 'face-6', tone: '#FFA06A' },
-      { id: '2', title: 'Manicure', meta: 'Sep 28 • The Suite', icon: 'back-hand', tone: '#FFA06A' },
-    ],
-    []
-  );
+  useEffect(() => {
+    setProfileImage(avatarDisplayUri(user?.avatar));
+  }, [user?.id, user?.avatar]);
 
-  const favorites = useMemo(
-    () => [
-      {
-        id: 'f1',
-        name: 'Elena R.',
-        role: 'Skin Expert',
-        image:
-          'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=500&q=80',
-      },
-      {
-        id: 'f2',
-        name: 'Marcus V.',
-        role: 'Master Stylist',
-        image:
-          'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=80',
-      },
-    ],
-    []
-  );
+  const hasProfilePhoto = Boolean(profileImage && String(profileImage).trim());
+
+  const recentBookings = useMemo(() => [], []);
+
+  const favorites = useMemo(() => [], []);
 
   const handleUploadPhoto = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -66,10 +67,49 @@ export default function ProfileScreen() {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.8,
+      quality: 0.85,
     });
-    if (!result.canceled && result.assets?.[0]?.uri) {
-      setProfileImage(result.assets[0].uri);
+    if (result.canceled || !result.assets?.[0]?.uri) return;
+    if (!token) {
+      Alert.alert('Sign in required', 'Please sign in again to save your photo to your account.');
+      return;
+    }
+    const asset = result.assets[0];
+    setUploadingPhoto(true);
+    try {
+      const form = new FormData();
+      if (Platform.OS === 'web') {
+        const blobRes = await fetch(asset.uri);
+        const blob = await blobRes.blob();
+        const mime = blob.type || asset.mimeType || 'image/jpeg';
+        const ext =
+          mime.includes('png') ? 'png' : mime.includes('webp') ? 'webp' : mime.includes('gif') ? 'gif' : 'jpg';
+        form.append('avatar', blob, `photo.${ext}`);
+      } else {
+        const name = asset.fileName || asset.uri.split('/').pop() || 'photo.jpg';
+        form.append('avatar', {
+          uri: asset.uri,
+          name,
+          type: asset.mimeType || 'image/jpeg',
+        });
+      }
+      const res = await fetch(`${API_URL}/api/users/me`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}` },
+        body: form,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `Upload failed (${res.status})`);
+      const savedPath = data.user?.avatar;
+      if (savedPath) {
+        updateUserProfile({ avatar: savedPath });
+        setProfileImage(avatarDisplayUri(savedPath));
+      }
+      Alert.alert('Saved', 'Your profile photo is saved.');
+    } catch (e) {
+      Alert.alert('Upload failed', String(e?.message || e));
+    } finally {
+      setUploadingPhoto(false);
     }
   };
 
@@ -79,7 +119,7 @@ export default function ProfileScreen() {
       email: email.trim(),
       city: city.trim(),
       memberSince: memberSince.trim(),
-      avatar: profileImage,
+      avatar: user?.avatar ?? null,
     });
     setIsEditing(false);
     Alert.alert('Profile Updated', 'Your profile changes have been saved.');
@@ -90,7 +130,13 @@ export default function ProfileScreen() {
       <View style={styles.topBar}>
         <View style={styles.topLeft}>
           <View style={styles.topAvatarWrap}>
-            <Image source={{ uri: profileImage }} style={styles.topAvatar} />
+            {hasProfilePhoto ? (
+              <Image source={{ uri: profileImage }} style={styles.topAvatar} />
+            ) : (
+              <View style={styles.avatarPlaceholderSmall}>
+                <MaterialIcons name="person" size={18} color="#9E9E9E" />
+              </View>
+            )}
           </View>
           <Text style={styles.topBrand}>Emerald Pro</Text>
         </View>
@@ -102,14 +148,29 @@ export default function ProfileScreen() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.heroSection}>
           <View style={styles.heroAvatarBorder}>
-            <Image source={{ uri: profileImage }} style={styles.heroAvatar} />
+            {hasProfilePhoto ? (
+              <Image source={{ uri: profileImage }} style={styles.heroAvatar} />
+            ) : (
+              <View style={styles.heroAvatarPlaceholder}>
+                <MaterialIcons name="person-outline" size={56} color="#BDBDBD" />
+                <Text style={styles.placeholderHint}>Add a photo</Text>
+              </View>
+            )}
           </View>
-          <Pressable style={styles.uploadChip} onPress={handleUploadPhoto}>
-            <MaterialIcons name="photo-camera" size={14} color="#FFFFFF" />
-            <Text style={styles.uploadChipText}>Upload</Text>
+          <Pressable
+            style={[styles.uploadChip, uploadingPhoto && styles.uploadChipDisabled]}
+            onPress={handleUploadPhoto}
+            disabled={uploadingPhoto}
+          >
+            {uploadingPhoto ? (
+              <ActivityIndicator color="#FFFFFF" size="small" />
+            ) : (
+              <MaterialIcons name="photo-camera" size={14} color="#FFFFFF" />
+            )}
+            <Text style={styles.uploadChipText}>{uploadingPhoto ? 'Saving…' : 'Upload'}</Text>
           </Pressable>
           <Text style={styles.heroName}>{name || DEFAULT_PROFILE_NAME}</Text>
-          <Text style={styles.heroMeta}>Atelier Member since {memberSince || '2024'}</Text>
+          <Text style={styles.heroMeta}>Atelier Member since {memberSince || String(new Date().getFullYear())}</Text>
         </View>
 
         {isEditing ? (
@@ -147,32 +208,46 @@ export default function ProfileScreen() {
               <Text style={styles.linkText}>View History</Text>
             </Pressable>
           </View>
-          {recentBookings.map((item, index) => (
-            <Pressable key={item.id} style={[styles.bookingCard, index === 1 && styles.bookingCardOffset]}>
-              <View style={styles.bookingLeft}>
-                <View style={[styles.bookingIconWrap, { backgroundColor: item.tone }]}>
-                  <MaterialIcons name={item.icon} size={20} color="#FF6B2C" />
+          {recentBookings.length === 0 ? (
+            <View style={styles.emptyCard}>
+              <MaterialIcons name="event-available" size={28} color="#C4C4C4" />
+              <Text style={styles.emptyTitle}>No bookings yet</Text>
+              <Text style={styles.emptySub}>When you book a service, it will show up here.</Text>
+            </View>
+          ) : (
+            recentBookings.map((item, index) => (
+              <Pressable key={item.id} style={[styles.bookingCard, index === 1 && styles.bookingCardOffset]}>
+                <View style={styles.bookingLeft}>
+                  <View style={[styles.bookingIconWrap, { backgroundColor: item.tone }]}>
+                    <MaterialIcons name={item.icon} size={20} color="#FF6B2C" />
+                  </View>
+                  <View>
+                    <Text style={styles.bookingTitle}>{item.title}</Text>
+                    <Text style={styles.bookingMeta}>{item.meta}</Text>
+                  </View>
                 </View>
-                <View>
-                  <Text style={styles.bookingTitle}>{item.title}</Text>
-                  <Text style={styles.bookingMeta}>{item.meta}</Text>
-                </View>
-              </View>
-              <MaterialIcons name="chevron-right" size={20} color="#9aa6a1" />
-            </Pressable>
-          ))}
+                <MaterialIcons name="chevron-right" size={20} color="#9aa6a1" />
+              </Pressable>
+            ))
+          )}
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Favorite Artisans</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.favRow}>
-            {favorites.map((item) => (
-              <View key={item.id} style={styles.favCard}>
-                <Image source={{ uri: item.image }} style={styles.favAvatar} />
-                <Text style={styles.favName}>{item.name}</Text>
-                <Text style={styles.favRole}>{item.role}</Text>
+            {favorites.length === 0 ? (
+              <View style={styles.favEmptyWrap}>
+                <Text style={styles.favEmptyText}>No favorite artisans yet. Save pros you love after a booking — they’ll appear here.</Text>
               </View>
-            ))}
+            ) : (
+              favorites.map((item) => (
+                <View key={item.id} style={styles.favCard}>
+                  <Image source={{ uri: item.image }} style={styles.favAvatar} />
+                  <Text style={styles.favName}>{item.name}</Text>
+                  <Text style={styles.favRole}>{item.role}</Text>
+                </View>
+              ))
+            )}
             <Pressable style={styles.favCard}>
               <View style={styles.addFavCircle}>
                 <MaterialIcons name="add" size={22} color="#9E9E9E" />
@@ -212,20 +287,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(240,252,250,0.9)',
+    backgroundColor: '#EDE0D4',
     borderBottomWidth: 1,
-    borderColor: 'rgba(192,201,195,0.35)',
+    borderColor: 'rgba(210, 195, 180, 0.45)',
   },
   topLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  topAvatarWrap: { width: 34, height: 34, borderRadius: 17, overflow: 'hidden', borderWidth: 2, borderColor: '#FFA06A' },
+  topAvatarWrap: { width: 34, height: 34, borderRadius: 17, overflow: 'hidden', borderWidth: 2, borderColor: '#FFA06A', backgroundColor: '#F5F5F5' },
   topAvatar: { width: '100%', height: '100%' },
+  avatarPlaceholderSmall: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F0F0F0' },
   topBrand: { color: '#1E1E1E', fontSize: fontScale(21), fontWeight: '800' },
   topActionBtn: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
   content: { padding: 14, paddingBottom: 30 },
   heroSection: { alignItems: 'center', marginBottom: 14 },
   heroAvatarBorder: { width: 130, height: 130, borderRadius: 65, padding: 3, backgroundColor: '#FF6B2C' },
   heroAvatar: { width: '100%', height: '100%', borderRadius: 63, borderWidth: 4, borderColor: '#EDE0D4' },
+  heroAvatarPlaceholder: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 63,
+    backgroundColor: '#F5F5F5',
+    borderWidth: 4,
+    borderColor: '#EDE0D4',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 4,
+  },
+  placeholderHint: { marginTop: 8, fontSize: fontScale(11), fontWeight: '600', color: '#9E9E9E' },
   uploadChip: { marginTop: 8, borderRadius: 999, backgroundColor: '#FF6B2C', paddingHorizontal: 10, paddingVertical: 6, flexDirection: 'row', alignItems: 'center', gap: 4 },
+  uploadChipDisabled: { opacity: 0.85 },
   uploadChipText: { color: '#FFFFFF', fontSize: fontScale(10), fontWeight: '700', textTransform: 'uppercase' },
   heroName: { color: '#1E1E1E', fontSize: fontScale(34), fontWeight: '800', marginTop: 8 },
   heroMeta: { color: '#6B6B6B', fontSize: fontScale(13), fontWeight: '500' },
@@ -254,6 +343,19 @@ const styles = StyleSheet.create({
   sectionHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   sectionTitle: { color: '#1E1E1E', fontSize: fontScale(22), fontWeight: '700' },
   linkText: { color: '#FF6B2C', fontSize: fontScale(12), fontWeight: '700' },
+  emptyCard: {
+    borderRadius: 24,
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 22,
+    paddingHorizontal: 16,
+    marginBottom: 8,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(192,201,195,0.35)',
+    borderStyle: 'dashed',
+  },
+  emptyTitle: { marginTop: 8, color: '#1E1E1E', fontSize: fontScale(15), fontWeight: '700' },
+  emptySub: { marginTop: 4, color: '#6B6B6B', fontSize: fontScale(12), textAlign: 'center', lineHeight: 18 },
   bookingCard: { borderRadius: 24, backgroundColor: '#FFFFFF', padding: 14, marginBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   bookingCardOffset: { marginLeft: 14 },
   bookingLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
@@ -261,6 +363,8 @@ const styles = StyleSheet.create({
   bookingTitle: { color: '#1E1E1E', fontSize: fontScale(14), fontWeight: '700' },
   bookingMeta: { color: '#6B6B6B', fontSize: fontScale(11), marginTop: 1 },
   favRow: { gap: 10, paddingTop: 8, paddingBottom: 6 },
+  favEmptyWrap: { maxWidth: 280, paddingVertical: 8, paddingRight: 8 },
+  favEmptyText: { color: '#6B6B6B', fontSize: fontScale(12), lineHeight: 18 },
   favCard: { width: 140, borderRadius: 30, padding: 12, backgroundColor: '#F5F5F5', alignItems: 'center' },
   favAvatar: { width: 76, height: 76, borderRadius: 38, marginBottom: 8 },
   favName: { color: '#1E1E1E', fontSize: fontScale(14), fontWeight: '700' },

@@ -1,6 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
+  Animated,
   ImageBackground,
   KeyboardAvoidingView,
   Platform,
@@ -15,10 +16,16 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import useAuth from '../../hooks/useAuth';
-import { resendLoginOtp, sendLoginOtp } from '../../services/authService';
 import { ROLES } from '../../utils/constants';
 import { AuthTabs, BookiLogo, BOOKI, UnderlineField } from '../../components/BookiAuthChrome';
 import { clamp, fontScale, moderateScale } from '../../utils/responsive';
+
+/** Toast copy for failed sign-in — keep one clear line in the popup. */
+function formatLoginErrorToast(raw) {
+  const msg = String(raw || '').trim();
+  if (/not active|suspended/i.test(msg)) return 'This account is not active.';
+  return 'Invalid credentials.';
+}
 
 export default function LoginScreen({ navigation }) {
   const { login, loading, setRole } = useAuth();
@@ -26,71 +33,111 @@ export default function LoginScreen({ navigation }) {
   const { width } = useWindowDimensions();
   const [countryCode] = useState('+91');
   const [mobile, setMobile] = useState('');
-  const [otp, setOtp] = useState(['', '', '', '']);
-  const [otpSending, setOtpSending] = useState(false);
-  const [lastOtpMobile, setLastOtpMobile] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
   const [mobileFocused, setMobileFocused] = useState(false);
-  const otpRefs = useRef([]);
+  const [passFocused, setPassFocused] = useState(false);
+  const [loginErrorToast, setLoginErrorToast] = useState(null);
+  const toastOpacity = useRef(new Animated.Value(0)).current;
+  const toastTranslateY = useRef(new Animated.Value(-22)).current;
+  const toastScale = useRef(new Animated.Value(0.9)).current;
+  const toastHideTimerRef = useRef(null);
+
+  const runToastHide = useCallback(() => {
+    Animated.parallel([
+      Animated.timing(toastOpacity, { toValue: 0, duration: 220, useNativeDriver: true }),
+      Animated.timing(toastTranslateY, { toValue: -12, duration: 220, useNativeDriver: true }),
+      Animated.timing(toastScale, { toValue: 0.94, duration: 220, useNativeDriver: true }),
+    ]).start(({ finished }) => {
+      if (finished) setLoginErrorToast(null);
+    });
+  }, [toastOpacity, toastTranslateY, toastScale]);
+
+  const dismissToast = useCallback(() => {
+    if (toastHideTimerRef.current) {
+      clearTimeout(toastHideTimerRef.current);
+      toastHideTimerRef.current = null;
+    }
+    runToastHide();
+  }, [runToastHide]);
+
+  useEffect(() => {
+    if (!loginErrorToast) return undefined;
+    toastOpacity.setValue(0);
+    toastTranslateY.setValue(-22);
+    toastScale.setValue(0.9);
+    Animated.parallel([
+      Animated.timing(toastOpacity, { toValue: 1, duration: 280, useNativeDriver: true }),
+      Animated.spring(toastTranslateY, {
+        toValue: 0,
+        friction: 8,
+        tension: 160,
+        useNativeDriver: true,
+      }),
+      Animated.spring(toastScale, {
+        toValue: 1,
+        friction: 8,
+        tension: 160,
+        useNativeDriver: true,
+      }),
+    ]).start();
+    toastHideTimerRef.current = setTimeout(runToastHide, 4000);
+    return () => {
+      if (toastHideTimerRef.current) {
+        clearTimeout(toastHideTimerRef.current);
+        toastHideTimerRef.current = null;
+      }
+    };
+  }, [loginErrorToast, runToastHide, toastOpacity, toastTranslateY, toastScale]);
 
   const heroHeight = clamp(width * 0.52, 200, 280);
   const pad = clamp(width * 0.06, 18, 24);
 
-  const otpFilledCount = otp.filter((digit) => digit).length;
+  const mobileValid = mobile.trim().length === 10;
 
   const submit = async () => {
     if (mobile.trim().length < 10) {
       return Alert.alert('Invalid Mobile Number', 'Please enter a valid 10 digit mobile number.');
     }
-    if (otp.join('').length < 4) {
-      return Alert.alert('Verification Incomplete', 'Please enter the 4 digit verification code.');
+    if (!password || password.length < 6) {
+      return Alert.alert('Password', 'Enter the password you used when you registered (min. 6 characters).');
     }
     try {
-      await login({ mobile, otp: otp.join('') });
+      await login({ mobile, password });
       setRole(ROLES.CUSTOMER);
     } catch (error) {
-      Alert.alert('Sign In Failed', error?.message || 'Please try again.');
+      setLoginErrorToast(formatLoginErrorToast(error?.message || 'Sign in failed.'));
     }
   };
 
-  const updateOtpDigit = (index, value) => {
-    const sanitized = value.replace(/[^0-9]/g, '').slice(-1);
-    setOtp((prev) => prev.map((item, idx) => (idx === index ? sanitized : item)));
-    if (sanitized && index < otp.length - 1) {
-      otpRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleOtpKeyPress = (index, key) => {
-    if (key === 'Backspace' && !otp[index] && index > 0) {
-      otpRefs.current[index - 1]?.focus();
-    }
-  };
-
-  const requestOtp = async () => {
-    if (mobile.trim().length < 10) {
-      return Alert.alert('Invalid Mobile Number', 'Please enter a valid 10 digit mobile number first.');
-    }
-    const isResend = lastOtpMobile === mobile;
-    setOtpSending(true);
-    try {
-      if (isResend) {
-        await resendLoginOtp(mobile);
-      } else {
-        await sendLoginOtp(mobile);
-      }
-      setLastOtpMobile(mobile);
-      Alert.alert('OTP', isResend ? 'A new code has been sent.' : 'Verification code sent to your mobile.');
-    } catch (e) {
-      Alert.alert('OTP', e?.message || 'Could not send OTP. Try again.');
-    } finally {
-      setOtpSending(false);
-    }
-  };
-
-  const mobileValid = mobile.trim().length === 10;
+  const toastMaxW = Math.min(248, width - 24);
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      {loginErrorToast ? (
+        <Animated.View
+          style={[
+            styles.errorToastWrap,
+            {
+              top: Math.max(insets.top, 8) + 2,
+              right: 10,
+              width: toastMaxW,
+              opacity: toastOpacity,
+              transform: [{ translateY: toastTranslateY }, { scale: toastScale }],
+            },
+          ]}
+          pointerEvents="box-none"
+        >
+          <Pressable
+            accessibilityRole="alert"
+            onPress={dismissToast}
+            style={styles.errorToast}
+          >
+            <MaterialIcons name="error-outline" size={15} color="#B91C1C" style={styles.errorToastIcon} />
+            <Text style={styles.errorToastText}>{loginErrorToast}</Text>
+          </Pressable>
+        </Animated.View>
+      ) : null}
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.select({ ios: 'padding', android: undefined })}>
         <ScrollView
           contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}
@@ -100,7 +147,7 @@ export default function LoginScreen({ navigation }) {
           <View style={[styles.heroWrap, { height: heroHeight }]}>
             <ImageBackground
               source={{
-                uri: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=1200&q=80',
+                uri: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=1200&auto=format&fit=crop&q=80&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YmVhdXR5fGVufDB8fDB8fHww',
               }}
               style={styles.heroImage}
               resizeMode="cover"
@@ -117,7 +164,7 @@ export default function LoginScreen({ navigation }) {
             <AuthTabs active="login" navigation={navigation} />
 
             <Text style={styles.headline}>Welcome back</Text>
-            <Text style={styles.sub}>Enter your mobile and verification code to sign in.</Text>
+            <Text style={styles.sub}>Sign in with your registered mobile number and password.</Text>
 
             <UnderlineField label="Mobile Number" focused={mobileFocused}>
               <Text style={styles.cc}>{countryCode}</Text>
@@ -135,34 +182,25 @@ export default function LoginScreen({ navigation }) {
               <MaterialIcons name="smartphone" size={22} color={mobileValid ? BOOKI.success : BOOKI.muted} />
             </UnderlineField>
 
-            <View style={styles.otpHeader}>
-              <Text style={styles.otpLabel}>Verification code</Text>
-              <Pressable disabled={otpSending || loading} onPress={requestOtp} hitSlop={8}>
-                <Text style={[styles.sendLink, (otpSending || loading) && styles.sendLinkDisabled]}>
-                  {otpSending ? 'Sending…' : lastOtpMobile === mobile && mobile.length === 10 ? 'Resend' : 'Send OTP'}
-                </Text>
+            <UnderlineField label="Password" focused={passFocused}>
+              <TextInput
+                value={password}
+                onChangeText={setPassword}
+                placeholder="Your account password"
+                placeholderTextColor={BOOKI.muted}
+                secureTextEntry={!showPass}
+                style={styles.mobileInput}
+                onFocus={() => setPassFocused(true)}
+                onBlur={() => setPassFocused(false)}
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+              <Pressable onPress={() => setShowPass((p) => !p)} hitSlop={8}>
+                <MaterialIcons name={showPass ? 'visibility-off' : 'visibility'} size={22} color={BOOKI.muted} />
               </Pressable>
-            </View>
-            <View style={styles.otpRow}>
-              {otp.map((digit, index) => (
-                <TextInput
-                  key={`otp-${index}`}
-                  ref={(ref) => {
-                    otpRefs.current[index] = ref;
-                  }}
-                  value={digit}
-                  onChangeText={(value) => updateOtpDigit(index, value)}
-                  onKeyPress={({ nativeEvent }) => handleOtpKeyPress(index, nativeEvent.key)}
-                  keyboardType="number-pad"
-                  maxLength={1}
-                  style={styles.otpBox}
-                  textAlign="center"
-                  placeholder="•"
-                  placeholderTextColor={BOOKI.line}
-                />
-              ))}
-            </View>
-            <Text style={styles.otpHint}>{otpFilledCount}/4 digits</Text>
+            </UnderlineField>
+
+            <Text style={styles.hintMuted}>New users: create an account first — your details are saved securely. OTP login can be added later.</Text>
 
             <Pressable
               disabled={loading}
@@ -172,7 +210,14 @@ export default function LoginScreen({ navigation }) {
               <Text style={styles.primaryBtnText}>{loading ? 'Signing in...' : 'Login'}</Text>
             </Pressable>
 
-            <Pressable onPress={() => Alert.alert('Forgot password?', 'Use OTP login — we verify with your mobile number.')}>
+            <Pressable
+              onPress={() =>
+                Alert.alert(
+                  'Forgot password?',
+                  'Reset via SMS (OTP) will be available in a future update. For now, contact support or sign up again with a new email if needed.'
+                )
+              }
+            >
               <Text style={styles.forgot}>Forgot Password?</Text>
             </Pressable>
 
@@ -190,6 +235,36 @@ export default function LoginScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  errorToastWrap: {
+    position: 'absolute',
+    zIndex: 9999,
+  },
+  errorToast: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 9,
+    paddingHorizontal: 11,
+    paddingLeft: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(185, 28, 28, 0.22)',
+    borderLeftWidth: 3,
+    borderLeftColor: '#DC2626',
+    backgroundColor: '#FEF2F2',
+    shadowColor: '#450a0a',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  errorToastIcon: { marginRight: 7 },
+  errorToastText: {
+    flex: 1,
+    color: '#991B1B',
+    fontSize: fontScale(12),
+    fontWeight: '600',
+    lineHeight: fontScale(16),
+  },
   safe: { flex: 1, backgroundColor: BOOKI.bg },
   flex: { flex: 1 },
   scroll: { flexGrow: 1, backgroundColor: BOOKI.bg },
@@ -215,6 +290,12 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   sub: { color: BOOKI.muted, marginTop: 8, marginBottom: 8, fontSize: fontScale(14), lineHeight: 20 },
+  hintMuted: {
+    marginTop: 10,
+    fontSize: fontScale(11),
+    lineHeight: fontScale(16),
+    color: BOOKI.muted,
+  },
   cc: { fontWeight: '700', color: BOOKI.charcoal, marginRight: 10, fontSize: fontScale(15) },
   mobileInput: {
     flex: 1,
@@ -222,31 +303,8 @@ const styles = StyleSheet.create({
     color: BOOKI.charcoal,
     paddingVertical: 4,
   },
-  otpHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-    marginTop: 4,
-  },
-  otpLabel: { fontSize: 13, fontWeight: '600', color: BOOKI.charcoal },
-  sendLink: { fontSize: 13, fontWeight: '700', color: BOOKI.orange },
-  sendLinkDisabled: { opacity: 0.45 },
-  otpRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 10 },
-  otpBox: {
-    flex: 1,
-    maxWidth: 56,
-    height: 52,
-    fontSize: fontScale(22),
-    fontWeight: '700',
-    color: BOOKI.charcoal,
-    borderBottomWidth: 2,
-    borderBottomColor: BOOKI.line,
-    paddingBottom: 4,
-  },
-  otpHint: { marginTop: 8, color: BOOKI.muted, fontSize: fontScale(11) },
   primaryBtn: {
-    marginTop: 22,
+    marginTop: 18,
     minHeight: 54,
     borderRadius: 6,
     backgroundColor: BOOKI.charcoal,

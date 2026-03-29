@@ -15,6 +15,8 @@ export const AuthProvider = ({ children }) => {
       const res = await loginUser(payload);
       setUser(res.user);
       setToken(res.token);
+    } catch (e) {
+      throw e;
     } finally {
       setLoading(false);
     }
@@ -22,8 +24,15 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (payload) => {
     setLoading(true);
-    try { const res = await signupUser(payload); setUser(res.user); setToken(res.token); }
-    finally { setLoading(false); }
+    try {
+      const res = await signupUser(payload);
+      setUser(res.user);
+      setToken(res.token);
+    } catch (e) {
+      throw e;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = () => {

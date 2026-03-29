@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Button from '../../../components/Button';
 import useBooking from '../../../hooks/useBooking';
+import { AuthContext } from '../../../context/AuthContext';
+import { recordCustomerPayment } from '../../../services/paymentService';
 import { BOOKING_STATUS } from '../../../utils/constants';
 import { fontScale } from '../../../utils/responsive';
 
 export default function PaymentScreen({ route, navigation }) {
   const { service, date, time, address } = route.params || {};
   const { addBooking } = useBooking();
+  const { user } = useContext(AuthContext);
   const payableAmount = Math.round((service?.price || 399) * 1.05);
 
   const submit = async () => {
@@ -22,14 +25,42 @@ export default function PaymentScreen({ route, navigation }) {
       status: BOOKING_STATUS.ACCEPTED,
     });
 
+    const transactionId = `RP_DEMO_${Date.now()}`;
+    const slotDate = date || 'Tomorrow';
+    const slotTime = time || '4:00 PM';
+    const addr = address || 'Atelier Studio, Suite 402';
+    const serviceName = service?.name || 'Beauty Service';
+
+    try {
+      await recordCustomerPayment({
+        customerName: user?.name || 'Guest',
+        customerEmail: user?.email || '',
+        customerId: user?.id || undefined,
+        serviceName,
+        serviceId: service?._id || service?.id || '',
+        amount: payableAmount,
+        currency: 'INR',
+        status: 'completed',
+        workDetails: `Paid via Razorpay (demo). Booking confirmed for ${slotDate} ${slotTime}. Location: ${addr}`,
+        transactionId,
+        bookingId: booking.id,
+        slotDate,
+        slotTime,
+        address: addr,
+        paymentMethod: 'razorpay_demo',
+      });
+    } catch (e) {
+      if (__DEV__) console.warn('[PaymentScreen] recordCustomerPayment', e?.message || e);
+    }
+
     navigation.navigate('PaymentReceiptScreen', {
       bookingId: booking.id,
-      serviceName: service?.name || 'Beauty Service',
+      serviceName,
       amount: payableAmount,
-      date: date || 'Tomorrow',
-      time: time || '4:00 PM',
-      address: address || 'Atelier Studio, Suite 402',
-      transactionId: `RP_DEMO_${Date.now()}`,
+      date: slotDate,
+      time: slotTime,
+      address: addr,
+      transactionId,
     });
   };
 

@@ -44,8 +44,8 @@ export default function SignupScreen({ navigation }) {
     if (password !== confirmPassword) return Alert.alert('Mismatch', 'Passwords do not match.');
     try {
       await signup({ name, email, password, mobile });
-    } catch {
-      Alert.alert('Signup Failed', 'Try again.');
+    } catch (e) {
+      Alert.alert('Signup Failed', e?.message || 'Try again.');
     }
   };
 
