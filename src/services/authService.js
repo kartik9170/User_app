@@ -22,6 +22,22 @@ export const resendLoginOtp = async (mobile) => {
   return data;
 };
 
+export const loginUserWithOtp = async (payload) => {
+  const mobile = payload?.mobile;
+  const otp = payload?.otp;
+  if (!mobile || !otp) {
+    throw new Error('Mobile and OTP are required.');
+  }
+  const res = await fetch(`${API_URL}/api/users/otp/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mobile, otp }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `OTP login failed (${res.status})`);
+  return { token: data.token, user: data.user };
+};
+
 /** Customer sign-in: mobile + password (saved at registration). */
 export const loginUser = async (payload) => {
   const mobile = payload?.mobile;

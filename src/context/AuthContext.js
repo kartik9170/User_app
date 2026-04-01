@@ -1,5 +1,5 @@
 import React, { createContext, useMemo, useState } from 'react';
-import { loginUser, signupUser } from '../services/authService';
+import { loginUser, loginUserWithOtp, resendLoginOtp, sendLoginOtp, signupUser } from '../services/authService';
 
 export const AuthContext = createContext();
 
@@ -35,6 +35,37 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const requestLoginOtp = async (mobile) => {
+    setLoading(true);
+    try {
+      return await sendLoginOtp(mobile);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const requestResendLoginOtp = async (mobile) => {
+    setLoading(true);
+    try {
+      return await resendLoginOtp(mobile);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loginWithOtp = async (payload) => {
+    setLoading(true);
+    try {
+      const res = await loginUserWithOtp(payload);
+      setUser(res.user);
+      setToken(res.token);
+    } catch (e) {
+      throw e;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -53,6 +84,9 @@ export const AuthProvider = ({ children }) => {
       loading,
       isAuthenticated: Boolean(token),
       login,
+      loginWithOtp,
+      requestLoginOtp,
+      requestResendLoginOtp,
       signup,
       setRole,
       logout,
