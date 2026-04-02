@@ -3,7 +3,6 @@ import {
   ActivityIndicator,
   Alert,
   Image,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -16,22 +15,18 @@ import * as ImagePicker from 'expo-image-picker';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Button from '../../components/Button';
 import useAuth from '../../hooks/useAuth';
-import { API_URL } from '../../config/config';
 import { fontScale } from '../../utils/responsive';
 
-/** Server returns `/uploads/...`; local picks use `file://`; build a single display URI. */
 function avatarDisplayUri(avatar) {
   if (avatar == null || !String(avatar).trim()) return null;
   const s = String(avatar).trim();
-  if (s.startsWith('file:') || s.startsWith('http://') || s.startsWith('https://')) return s;
-  const path = s.startsWith('/') ? s : `/${s}`;
-  return `${API_URL}${path}`;
+  return s.startsWith('file:') || s.startsWith('http://') || s.startsWith('https://') ? s : null;
 }
 
 const DEFAULT_PROFILE_NAME = 'Member';
 
 export default function ProfileScreen() {
-  const { user, token, logout, updateUserProfile } = useAuth();
+  const { user, logout, updateUserProfile } = useAuth();
   const sanitizedName = (() => {
     const raw = String(user?.name || '').trim();
     if (!raw) return DEFAULT_PROFILE_NAME;
@@ -70,42 +65,12 @@ export default function ProfileScreen() {
       quality: 0.85,
     });
     if (result.canceled || !result.assets?.[0]?.uri) return;
-    if (!token) {
-      Alert.alert('Sign in required', 'Please sign in again to save your photo to your account.');
-      return;
-    }
     const asset = result.assets[0];
     setUploadingPhoto(true);
     try {
-      const form = new FormData();
-      if (Platform.OS === 'web') {
-        const blobRes = await fetch(asset.uri);
-        const blob = await blobRes.blob();
-        const mime = blob.type || asset.mimeType || 'image/jpeg';
-        const ext =
-          mime.includes('png') ? 'png' : mime.includes('webp') ? 'webp' : mime.includes('gif') ? 'gif' : 'jpg';
-        form.append('avatar', blob, `photo.${ext}`);
-      } else {
-        const name = asset.fileName || asset.uri.split('/').pop() || 'photo.jpg';
-        form.append('avatar', {
-          uri: asset.uri,
-          name,
-          type: asset.mimeType || 'image/jpeg',
-        });
-      }
-      const res = await fetch(`${API_URL}/api/users/me`, {
-        method: 'PATCH',
-        headers: { Authorization: `Bearer ${token}` },
-        body: form,
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || `Upload failed (${res.status})`);
-      const savedPath = data.user?.avatar;
-      if (savedPath) {
-        updateUserProfile({ avatar: savedPath });
-        setProfileImage(avatarDisplayUri(savedPath));
-      }
-      Alert.alert('Saved', 'Your profile photo is saved.');
+      updateUserProfile({ avatar: asset.uri });
+      setProfileImage(avatarDisplayUri(asset.uri));
+      Alert.alert('Saved', 'Your profile photo is saved locally.');
     } catch (e) {
       Alert.alert('Upload failed', String(e?.message || e));
     } finally {

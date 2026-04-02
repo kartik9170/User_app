@@ -33,7 +33,7 @@ export default function HomeScreen({ navigation }) {
         setServices(svc);
         setChapters(ch);
       } catch {
-        setLoadError('Could not load services. Check API and try again.');
+        setLoadError('Could not load services. Please try again.');
         setServices([]);
         setChapters([]);
       } finally {

@@ -1,72 +1,71 @@
-import { API_URL } from '../config/config';
+const wait = () => new Promise((resolve) => setTimeout(resolve, 250));
+const DEMO_OTP_CODES = new Set(['1234', '123456']);
+
+function normalizeMobile(value) {
+  return String(value || '').replace(/\D/g, '').slice(0, 10);
+}
+
+function buildUser({ mobile, name, email }) {
+  const cleanMobile = normalizeMobile(mobile);
+  return {
+    id: `user_${cleanMobile || Date.now()}`,
+    name: name || 'Atelier Member',
+    email: email || '',
+    mobile: cleanMobile,
+    role: 'customer',
+    status: 'active',
+  };
+}
 
 export const sendLoginOtp = async (mobile) => {
-  const res = await fetch(`${API_URL}/api/users/otp/send`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mobile }),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || `Could not send OTP (${res.status})`);
-  return data;
+  const cleanMobile = normalizeMobile(mobile);
+  if (cleanMobile.length !== 10) {
+    throw new Error('Please enter a valid 10-digit mobile number.');
+  }
+  await wait();
+  return { success: true, message: 'Demo OTP sent. Use 1234.', otpHint: '1234' };
 };
 
 export const resendLoginOtp = async (mobile) => {
-  const res = await fetch(`${API_URL}/api/users/otp/resend`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mobile }),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || `Could not resend OTP (${res.status})`);
-  return data;
+  const cleanMobile = normalizeMobile(mobile);
+  if (cleanMobile.length !== 10) {
+    throw new Error('Please enter a valid 10-digit mobile number.');
+  }
+  await wait();
+  return { success: true, message: 'Demo OTP resent. Use 1234.', otpHint: '1234' };
 };
 
 export const loginUserWithOtp = async (payload) => {
-  const mobile = payload?.mobile;
-  const otp = payload?.otp;
-  if (!mobile || !otp) {
-    throw new Error('Mobile and OTP are required.');
-  }
-  const res = await fetch(`${API_URL}/api/users/otp/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mobile, otp }),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || `OTP login failed (${res.status})`);
-  return { token: data.token, user: data.user };
+  const mobile = normalizeMobile(payload?.mobile);
+  const otp = String(payload?.otp || '').trim();
+  if (!mobile || !otp) throw new Error('Mobile and OTP are required.');
+  if (!DEMO_OTP_CODES.has(otp)) throw new Error('Invalid OTP. Use demo OTP 1234.');
+  await wait();
+  return {
+    token: `user-token-${mobile}`,
+    user: buildUser({ mobile }),
+  };
 };
 
-/** Customer sign-in: mobile + password (saved at registration). */
 export const loginUser = async (payload) => {
-  const mobile = payload?.mobile;
-  const password = payload?.password;
-  if (!mobile || !password) {
-    throw new Error('Mobile and password are required.');
-  }
-  const res = await fetch(`${API_URL}/api/users/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mobile, password }),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || `Sign in failed (${res.status})`);
-  return { token: data.token, user: data.user };
+  const mobile = normalizeMobile(payload?.mobile);
+  const password = String(payload?.password || '');
+  if (!mobile || !password) throw new Error('Mobile and password are required.');
+  await wait();
+  return {
+    token: `user-token-${mobile}`,
+    user: buildUser({ mobile }),
+  };
 };
 
 export const signupUser = async (payload) => {
-  const res = await fetch(`${API_URL}/api/users/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      name: payload.name,
-      email: payload.email,
-      mobile: payload.mobile || '',
-      password: payload.password,
+  await wait();
+  return {
+    token: `user-token-${Date.now()}`,
+    user: buildUser({
+      mobile: payload?.mobile,
+      name: payload?.name,
+      email: payload?.email,
     }),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || `Signup failed (${res.status})`);
-  return { token: data.token, user: data.user };
+  };
 };

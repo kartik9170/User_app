@@ -76,7 +76,7 @@ export default function CategoryServicesScreen({ route, navigation }) {
         <View style={styles.headSection}>
           <Text style={styles.heroTitle}>Find Your Perfect {category} Service</Text>
           <Text style={styles.heroSub}>
-            {usedApi ? 'Live catalog from your salon.' : 'Browse and book when ready.'}
+            {usedApi ? 'Updated service catalog.' : 'Browse and book when ready.'}
           </Text>
         </View>
 
@@ -119,7 +119,7 @@ export default function CategoryServicesScreen({ route, navigation }) {
         {!filtered.length ? (
           <View style={styles.emptyWrap}>
             <Text style={styles.emptyTitle}>No services found</Text>
-            <Text style={styles.emptySub}>Add services in the admin panel.</Text>
+            <Text style={styles.emptySub}>Try a different category or search keyword.</Text>
           </View>
         ) : null}
       </ScrollView>
